@@ -1,247 +1,171 @@
-<!--
-AR Egg Phase
-Files expected in /assets:
-  - model.glb
-  - model.usdz
+// --- Heart particle system (ใหม่) ---
+const canvas = document.getElementById('particles');
+const ctx = canvas.getContext('2d');
 
-This single-file deploy (index.html) uses <model-viewer> for Web + AR Quick Look (iOS) + Scene Viewer (Android).
-It also adds a preview-only full-screen gradient background and a looping particle-effect (sparkles rising from the ground around the model).
-It attempts to start ALL animations in the GLB at once using THREE.AnimationMixer (best-effort; some browsers/permissions may require a user gesture to start AR or audio/animations).
+let heartsOn = true;        // on/off
+let hearts = [];
 
-INSTRUCTIONS:
-  - Put index.html at repo root, push to GitHub, connect repo to Vercel, and deploy.
-  - Place your .glb and .usdz into /public/assets (or /assets depending on your build) and update the paths below if needed.
+function resizeCanvas(){
+  const dpr = window.devicePixelRatio || 1;
+  const w = canvas.clientWidth || canvas.offsetWidth;
+  const h = canvas.clientHeight || canvas.offsetHeight;
+  canvas.width = Math.round(w * dpr);
+  canvas.height = Math.round(h * dpr);
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
 
-Limitations & Notes:
-  - Auto-entering AR on page load can be blocked by mobile browsers (requires user gesture). The code calls enterAR() automatically on supported devices, but the browser may block it.
-  - Playing multiple animations at once: model-viewer doesn't expose a simple public API to play multiple clips simultaneously. This file uses a best-effort approach by using three.js's GLTFLoader and AnimationMixer to play all clips on the imported glTF inside the same <model-viewer> instance when possible. If that fails, fallback is to set model-viewer autoplay which typically runs the default/first clip.
-  - Particle ring radius: the script tries to compute a model radius from model-viewer bounding box. If that fails, set the CSS variable --model-radius manually on .viewer-wrap (in px).
--->
+// Try to estimate a model radius in pixels.
+// Order of preference: manual override -> model-viewer bounding box -> fallback fraction of canvas
+function getModelRadiusPx(){
+  const manual = viewerWrap.getAttribute('data-model-radius');
+  if(manual) return Number(manual);
 
-<!doctype html>
-<html lang="th">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>AR Egg Phase — Preview</title>
-  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
-  <style>
-    :root{
-      --bg-top: #212121; /* dark top */
-      --bg-bottom: #f48fb1; /* pink bottom */
+  try{
+    if(typeof mv.getBoundingBox === 'function'){
+      const bbox = mv.getBoundingBox();
+      if(bbox && bbox.min && bbox.max){
+        const size = Math.max(
+          Math.abs(bbox.max.x - bbox.min.x),
+          Math.abs(bbox.max.y - bbox.min.y),
+          Math.abs(bbox.max.z - bbox.min.z)
+        );
+        // heuristic multiplier to convert 3D model size -> approximately pixel radius
+        return Math.max(50, size * 220);
+      }
     }
-    html,body{height:100%;margin:0;font-family:Inter, Roboto, system-ui}
-    .page{height:100%;display:grid;place-items:center;background:linear-gradient(to bottom,var(--bg-top) 0%, var(--bg-top) 70%, var(--bg-bottom) 100%)}
-    /* When AR session is active we'll add a class to hide the gradient */
-    .page.ar-active{background:transparent}
-
-    .viewer-wrap{width:100%;max-width:900px;height:80vh;position:relative;display:block}
-    model-viewer{width:100%;height:100%;background:transparent;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,0.45);overflow:hidden}
-
-    /* Canvas on top of model-viewer for particle effects (preview only) */
-    canvas.particles{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none}
-
-    /* small UI footer */
-    .footer{position:fixed;left:12px;right:12px;bottom:12px;display:flex;justify-content:space-between;align-items:center;color:#fff;gap:10px}
-    .btn{background:rgba(255,255,255,0.12);padding:8px 12px;border-radius:999px;color:#fff;border:1px solid rgba(255,255,255,0.06);cursor:pointer}
-  </style>
-</head>
-<body>
-  <div class="page" id="page-root">
-    <div class="viewer-wrap" id="viewer-wrap" data-model-radius="">
-      <!-- model-viewer: autoplay for first clip, ios-src points to USDZ for Quick Look -->
-      <model-viewer id="mv"
-        src="/assets/model.glb"
-        ios-src="/assets/model.usdz"
-        alt="AR Egg Phase"
-        ar
-        ar-modes="webxr scene-viewer quick-look"
-        environment-image="neutral"  
-        skybox-image
-        camera-controls
-        autoplay
-        exposure="1"
-        shadow-intensity="0.8"
-        >
-      </model-viewer>
-
-      <canvas class="particles" id="particles"></canvas>
-    </div>
-
-    <div class="footer">
-      <div style="font-size:13px">AR Egg Phase — Preview</div>
-      <div style="display:flex;gap:8px">
-        <button id="enter-ar" class="btn">Enter AR</button>
-        <button id="toggle-particles" class="btn">Toggle Particles</button>
-      </div>
-    </div>
-  </div>
-
-  <script type="module">
-  import * as THREE from 'https://unpkg.com/three@0.164.0/build/three.module.js';
-  import { GLTFLoader } from 'https://unpkg.com/three@0.164.0/examples/jsm/loaders/GLTFLoader.js';
-
-  const mv = document.getElementById('mv');
-  const page = document.getElementById('page-root');
-  const viewerWrap = document.getElementById('viewer-wrap');
-  const enterARBtn = document.getElementById('enter-ar');
-  const toggleParticlesBtn = document.getElementById('toggle-particles');
-
-  // Particle canvas setup
-  const canvas = document.getElementById('particles');
-  const ctx = canvas.getContext('2d');
-  let particlesOn = true;
-
-  function resizeCanvas(){
-    const dpr = window.devicePixelRatio || 1;
-    canvas.width = canvas.clientWidth * dpr;
-    canvas.height = canvas.clientHeight * dpr;
-    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }catch(e){
+    // ignore; fallback below
   }
-  window.addEventListener('resize', resizeCanvas);
+
+  return Math.max(80, canvas.clientWidth * 0.18);
+}
+
+// Heart drawing helpers (normalized heart path)
+function drawHeartPath(ctx){
+  ctx.beginPath();
+  // normalized shape centered around (0,0)
+  ctx.moveTo(0, -7);
+  ctx.bezierCurveTo(0, -15, -12, -15, -12, -7);
+  ctx.bezierCurveTo(-12, 0, 0, 10, 0, 16);
+  ctx.bezierCurveTo(0, 10, 12, 0, 12, -7);
+  ctx.bezierCurveTo(12, -15, 0, -15, 0, -7);
+  ctx.closePath();
+}
+
+class Heart {
+  constructor(x, y, size, vy, vx, life, rot, rotSpeed, color){
+    this.x = x;
+    this.y = y;
+    this.size = size;        // px
+    this.vy = vy;            // px/sec (upward)
+    this.vx = vx;            // px/sec (horizontal drift)
+    this.life = life;        // seconds left
+    this.maxLife = life;
+    this.rot = rot;
+    this.rotSpeed = rotSpeed;
+    this.color = color || '#f48fb1';
+  }
+
+  update(dt){
+    this.x += this.vx * dt;
+    this.y -= this.vy * dt; // move up
+    this.rot += this.rotSpeed * dt;
+    this.life -= dt;
+  }
+
+  draw(ctx){
+    const t = Math.max(0, this.life / this.maxLife); // 1 -> 0
+    ctx.save();
+    ctx.globalAlpha = t;
+    ctx.translate(this.x, this.y);
+    ctx.rotate(this.rot);
+    // scale normalized heart (base 24 units) to required size
+    const scale = this.size / 24;
+    ctx.scale(scale, scale);
+    ctx.fillStyle = this.color;
+    drawHeartPath(ctx);
+    ctx.fill();
+    ctx.restore();
+  }
+}
+
+// spawn heart at a random angle around the model base (radius ~ modelRadius * 1.3)
+function spawnHeartAroundModel(){
+  const cw = canvas.clientWidth;
+  const ch = canvas.clientHeight;
+  const centerX = cw / 2;
+  // spawn around a vertical position near model base (a bit above bottom of viewer area)
+  const baseY = Math.round(ch * 0.68);
+
+  const baseRadius = getModelRadiusPx() * 1.3;
+  const angle = Math.random() * Math.PI * 2;
+  // distribute near ring: between 55% - 95% of radius to avoid exact center
+  const r = baseRadius * (0.55 + Math.random() * 0.4);
+  const x = centerX + Math.cos(angle) * r;
+  const y = baseY + Math.sin(angle) * (baseRadius * 0.12); // small vertical offset
+
+  const size = 6 + Math.random() * 14;   // px
+  const vy = 18 + Math.random() * 38;    // px/sec upward (tune to be slow)
+  const vx = (Math.random() - 0.5) * 30; // horizontal drift
+  const life = 1.2 + Math.random() * 0.9; // seconds (1.2 - 2.1s)
+  const rot = (Math.random() - 0.5) * Math.PI;
+  const rotSpeed = (Math.random() - 0.5) * 1.8;
+  const color = Math.random() > 0.85 ? '#ffd1dc' : '#f48fb1'; // small color variety
+
+  hearts.push(new Heart(x, y, size, vy, vx, life, rot, rotSpeed, color));
+}
+
+let lastFrame = performance.now();
+function heartLoop(now){
+  const dt = Math.min(0.05, (now - lastFrame) / 1000);
+  lastFrame = now;
+
+  // keep canvas size in sync on resize/rotation
   resizeCanvas();
 
-  // basic particle system: sparkles rising from ground in a circular area around model
-  class Particle{
-    constructor(x,y,dx,dy,life,size){
-      this.x=x;this.y=y;this.dx=dx;this.dy=dy;this.life=life;this.maxLife=life;this.size=size
-    }
-    update(dt){this.x+=this.dx*dt;this.y+=this.dy*dt;this.life-=dt}
-    draw(ctx){const t= this.life/this.maxLife; ctx.globalAlpha = Math.max(0, t); ctx.beginPath(); ctx.fillStyle = `rgba(255,255,255,${0.9*t})`; ctx.arc(this.x,this.y,this.size,0,Math.PI*2); ctx.fill()}
-  }
-  const particles=[];
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // config: spawn radius relative to model size. Try to compute model radius; if not set, fallback to viewer width/4
-  function getModelRadius(){
-    const manual = viewerWrap.getAttribute('data-model-radius');
-    if(manual) return Number(manual);
-    // try to estimate from model-viewer bounding box if available
-    try{
-      const bbox = mv.getBoundingBox(); // model-viewer provides this in newer versions
-      if(bbox){
-        const size = Math.sqrt(Math.pow(bbox.max.x-bbox.min.x,2)+Math.pow(bbox.max.y-bbox.min.y,2)+Math.pow(bbox.max.z-bbox.min.z,2))/2;
-        // convert 3D size to 2D pixel radius approximation
-        return Math.max(40, size*200);
-      }
-    }catch(e){/* ignore */}
-    // fallback
-    return Math.max(80, canvas.clientWidth*0.2);
-  }
-
-  let last = performance.now();
-  function loop(now){
-    const dt = Math.min(0.04,(now-last)/1000); last=now;
-    resizeCanvas();
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    if(particlesOn){
-      // spawn a few per frame to create continuous effect — lifespan 1.2s-2s
-      const spawnRate = 0.6; // particles per frame on average
-      if(Math.random() < spawnRate){
-        const radius = getModelRadius()*1.3; // 30% bigger than model
-        // pick an angle and spawn on a ring near bottom of viewport (ground)
-        const angle = Math.random()*Math.PI*2;
-        const cx = canvas.clientWidth/2;
-        const cy = canvas.clientHeight*0.78; // ground area, near bottom of viewer
-        const x = cx + Math.cos(angle)*radius;
-        const y = cy + Math.sin(angle)*(radius*0.25);
-        const dx = (Math.random()-0.5)*10;
-        const dy = - (30 + Math.random()*30); // move upward
-        const life = 1.2 + Math.random()*0.8; // 1.2 - 2.0s
-        const size = 1 + Math.random()*2.6;
-        particles.push(new Particle(x,y,dx,dy,life,size));
-      }
-      for(let i=particles.length-1;i>=0;i--){
-        const p=particles[i];
-        p.update(dt);
-        p.draw(ctx);
-        if(p.life<=0) particles.splice(i,1);
-      }
-    }
-    requestAnimationFrame(loop);
-  }
-  requestAnimationFrame(loop);
-
-  toggleParticlesBtn.addEventListener('click',()=>{particlesOn=!particlesOn; toggleParticlesBtn.textContent = particlesOn? 'Toggle Particles' : 'Particles Off'})
-
-  // Attempt to play all glTF animation clips simultaneously using three.js's AnimationMixer.
-  // This is a best-effort approach: model-viewer doesn't guarantee direct access to the underlying three.js scene for manipulation across all platforms.
-  async function tryPlayAllAnimations(){
-    try{
-      // load the same GLB with GLTFLoader so we can access clips and play them on the model-viewer scene
-      const loader = new GLTFLoader();
-      const gltf = await new Promise((res,rej)=> loader.load('/assets/model.glb', res, undefined, rej));
-      if(!gltf.animations || gltf.animations.length===0){ console.log('No animations found in GLB'); return }
-
-      // attempt to access the model-viewer's Three.js model
-      const internalModel = mv.scene; // model-viewer exposes `scene` that may be null depending on version
-      if(!internalModel){
-        console.log('model-viewer internal scene not available; falling back to autoplay');
-        return;
-      }
-
-      // Build mixer on the internal scene
-      const mixer = new THREE.AnimationMixer(internalModel);
-      gltf.animations.forEach((clip)=>{
-        const action = mixer.clipAction(clip);
-        action.reset(); action.play(); action.setLoop(THREE.LoopRepeat, Infinity);
-      });
-
-      // advance mixer on each frame
-      let prev = performance.now();
-      function tick(){
-        const now = performance.now();
-        const delta = (now-prev)/1000; prev=now;
-        mixer.update(delta);
-        requestAnimationFrame(tick);
-      }
-      requestAnimationFrame(tick);
-      console.log('Playing all animations via AnimationMixer (best-effort)');
-    }catch(err){
-      console.warn('Could not start all animations using three.js: ', err);
+  // spawn rate: probability per frame (tune as needed). Lower on mobile if needed.
+  if(heartsOn){
+    const spawnProbPerFrame = 0.6; // ~0.6 chance per frame at 60fps -> ~36 hearts/sec (but many expire)
+    if(Math.random() < spawnProbPerFrame){
+      spawnHeartAroundModel();
     }
   }
 
-  // When model is ready, try to play all animations
-  mv.addEventListener('load', async ()=>{
-    console.log('model-viewer loaded');
-    tryPlayAllAnimations();
+  for(let i = hearts.length - 1; i >= 0; i--){
+    const h = hearts[i];
+    h.update(dt);
+    h.draw(ctx);
+    if(h.life <= 0 || h.y < -50) hearts.splice(i, 1);
+  }
+
+  requestAnimationFrame(heartLoop);
+}
+requestAnimationFrame(heartLoop);
+
+// Public toggle (existing UI button)
+if(typeof toggleParticlesBtn !== 'undefined'){
+  toggleParticlesBtn.addEventListener('click', ()=>{
+    heartsOn = !heartsOn;
+    toggleParticlesBtn.textContent = heartsOn ? 'Toggle Particles' : 'Particles Off';
   });
+}
 
-  // AR helpers: hide the preview gradient and particles when AR is started
-  mv.addEventListener('ar-status', (evt)=>{
-    // evt.detail.status can be 'not-presenting' | 'session-started' | 'session-ended' etc. Use present state
-    const status = evt.detail?.status || '';
-    if(status.includes('session-started') || status.includes('presenting') || status.includes('in-ar')){
-      page.classList.add('ar-active');
-      particlesOn = false;
-    }else{
-      page.classList.remove('ar-active');
-      particlesOn = true;
-    }
-  });
+// Hide hearts when AR is active (preserve AR view)
+mv.addEventListener('ar-status', (evt) => {
+  const status = evt.detail?.status || '';
+  if(status.includes('session-started') || status.includes('presenting') || status.includes('in-ar')){
+    heartsOn = false;
+  }else{
+    heartsOn = true;
+  }
+});
 
-  // Enter AR on user click. Also attempt to auto-enter on mobile if browser allows.
-  enterARBtn.addEventListener('click', ()=> mv.enterAR());
-
-  // Try to auto-enter AR on mobile devices shortly after load (may be blocked by browser/user gesture requirement)
-  function isMobile(){return /iphone|ipad|ipod|android/i.test(navigator.userAgent)}
-  window.addEventListener('load', ()=>{
-    // small delay to allow model to initialize
-    setTimeout(()=>{
-      if(isMobile()){
-        // try to call enterAR(); may be blocked
-        mv.enterAR().catch(e=>console.log('Auto-enter AR blocked by browser - user gesture required'));
-      }
-    }, 800);
-  });
-
-  // Optional: expose a function to set manual model radius if automatic detection fails
-  window.setModelRadiusPx = function(px){ viewerWrap.setAttribute('data-model-radius', px); }
-
-  // Accessibility / instruction: if user wants direct USDZ quick-look without UI
-  // example: location.href = '/assets/model.usdz' — opening directly on iOS will trigger Quick Look
-  // We do NOT auto-redirect by default.
-
-  </script>
-</body>
-</html>
+// Allow manual override of model radius (px) from console
+window.setModelRadiusPx = function(px){
+  viewerWrap.setAttribute('data-model-radius', px);
+  console.log('Model radius override set to', px, 'px');
+};
