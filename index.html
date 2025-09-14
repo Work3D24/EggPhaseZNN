@@ -18,11 +18,6 @@
     .viewer-wrap{width:100%;max-width:900px;height:80vh;position:relative;display:block}
     model-viewer{width:100%;height:100%;background:transparent;border-radius:16px;
       box-shadow:0 10px 30px rgba(0,0,0,0.45);overflow:hidden}
-
-    .footer{position:fixed;left:12px;right:12px;bottom:12px;
-      display:flex;justify-content:space-between;align-items:center;color:#fff;gap:10px}
-    .btn{background:rgba(255,255,255,0.12);padding:8px 12px;border-radius:999px;
-      color:#fff;border:1px solid rgba(255,255,255,0.06);cursor:pointer}
   </style>
 </head>
 <body>
@@ -41,13 +36,6 @@
         shadow-intensity="0.8"
       ></model-viewer>
     </div>
-
-    <div class="footer">
-      <div style="font-size:13px">AR Egg Phase</div>
-      <div style="display:flex;gap:8px">
-        <button id="enter-ar" class="btn">Enter AR</button>
-      </div>
-    </div>
   </div>
 
   <script type="module">
@@ -57,9 +45,8 @@
   document.addEventListener('DOMContentLoaded', () => {
     const mv = document.getElementById('mv');
     const page = document.getElementById('page-root');
-    const enterARBtn = document.getElementById('enter-ar');
 
-    // Hide gradient when AR is active
+    // ซ่อนพื้นหลัง gradient เมื่อเข้าสู่ AR
     mv.addEventListener('ar-status', (evt) => {
       const status = evt.detail?.status || '';
       if(status.includes('session-started') || status.includes('presenting') || status.includes('in-ar')){
@@ -69,7 +56,7 @@
       }
     });
 
-    // Play all animations (best effort)
+    // เล่นทุก animation ของ GLB ด้วย THREE.AnimationMixer
     async function tryPlayAllAnimations(){
       try{
         const loader = new GLTFLoader();
@@ -93,21 +80,6 @@
       }catch(err){console.warn('Animation error', err)}
     }
     mv.addEventListener('load', ()=>{ tryPlayAllAnimations(); });
-
-    // Universal AR button
-    enterARBtn.addEventListener('click', ()=>{
-      const ua = navigator.userAgent.toLowerCase();
-      if(/iphone|ipad|ipod/.test(ua)){
-        // iOS → Quick Look
-        window.location.href = '/assets/model.usdz';
-      } else if(/android/.test(ua)){
-        // Android → Scene Viewer intent
-        const sceneViewerUrl = `intent://arvr.google.com/scene-viewer/1.0?file=${window.location.origin}/assets/model.glb#Intent;scheme=https;package=com.google.ar.core;action=android.intent.action.VIEW;S.browser_fallback_url=${window.location.href};end;`;
-        window.location.href = sceneViewerUrl;
-      } else {
-        console.log("AR not supported on this platform. Use mobile iOS/Android.");
-      }
-    });
   });
   </script>
 </body>
