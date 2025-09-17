@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>Special of ZNN</title>
+  <title>test</title>
   <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
   <style>
     :root {
@@ -138,6 +138,7 @@
     .do-not-show {
       margin-top:10px;
       font-size:14px;
+      color:#fff;
     }
     .countdown {
       margin-top:8px;
@@ -195,14 +196,14 @@
   </div>
 
   <script type="module">
-    import * as THREE from 'https://unpkg.com/three@0.164.0/build/three.module.js';
-    import { GLTFLoader } from 'https://unpkg.com/three@0.164.0/examples/jsm/loaders/GLTFLoader.js';
+    import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.164/build/three.module.js';
+    import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.164/examples/jsm/loaders/GLTFLoader.js';
 
     document.addEventListener('DOMContentLoaded', () => {
       const mv = document.getElementById('mv');
       const page = document.getElementById('page-root');
 
-      // ========== โมเดล ==========
+      // ====== โมเดล ======
       mv.addEventListener('ar-status', (evt) => {
         const status = evt.detail?.status || '';
         if(status.includes('session-started') || status.includes('presenting') || status.includes('in-ar')){
@@ -251,10 +252,10 @@
       });
       document.addEventListener("touchend", () => { cursorEl.style.display = "none"; });
 
-      // ========== Popup ==========
-      const DEV_MODE = true; // <-- ปิด/เปิดระบบ "Do not show again" ตรงนี้
+      // ====== Popup ======
+      const DEV_MODE = true; // <-- toggle dev mode ที่นี่
+      const POPUP_VERSION = "v1"; // <-- แก้เลข v ตรงนี้เวลามีจดหมายใหม่
 
-      const POPUP_VERSION = "v1"; // <-- แก้เลขเวอร์ชันที่นี่เวลาอัพเดทจดหมาย
       const popupOverlay = document.getElementById("popupOverlay");
       const popupClose = document.getElementById("popupClose");
       const letterImage = document.getElementById("letterImage");
