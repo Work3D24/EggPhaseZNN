@@ -3,48 +3,162 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>AR Egg Phase</title>
+  <title>Special of ZNN</title>
   <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
   <style>
     :root{
       --bg-top: #212121;
       --bg-bottom: #f48fb1;
+      --card-shadow: 0 10px 30px rgba(0,0,0,0.45);
     }
-    html,body{height:100%;margin:0;font-family:Inter, Roboto, system-ui}
-    .page{height:100%;display:grid;place-items:center;
-      background:linear-gradient(to bottom,var(--bg-top) 0%, var(--bg-top) 70%, var(--bg-bottom) 100%)}
-    .page.ar-active{background:transparent}
 
-    .viewer-wrap{width:100%;max-width:900px;height:80vh;position:relative;display:block}
-    model-viewer{width:100%;height:100%;background:transparent;border-radius:16px;
-      box-shadow:0 10px 30px rgba(0,0,0,0.45);overflow:hidden}
+    html,body{
+      height:100%;
+      margin:0;
+      font-family: Inter, Roboto, system-ui, -apple-system, "Segoe UI";
+      color:#fff;
+      background:linear-gradient(to bottom,var(--bg-top) 0%, var(--bg-top) 70%, var(--bg-bottom) 100%);
+      cursor: url("/assets/mouse.png"), auto;
+    }
 
-    .footer{position:fixed;left:12px;right:12px;bottom:12px;
-      display:flex;justify-content:space-between;align-items:center;color:#fff;gap:10px}
-    .btn{background:rgba(255,255,255,0.12);padding:8px 12px;border-radius:999px;
-      color:#fff;border:1px solid rgba(255,255,255,0.06);cursor:pointer}
+    .page{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      height:100%;
+    }
+    .page.ar-active{ background:transparent; }
+
+    /* กล่องโมเดล */
+    .viewer-card{
+      width:100%;
+      max-width:900px;
+      height:65vh;
+      background:transparent;
+      border-radius:20px;
+      box-shadow: var(--card-shadow);
+      overflow:hidden;
+    }
+    model-viewer{
+      width:100%;
+      height:100%;
+      background:transparent;
+      shadow-intensity:1;
+      shadow-softness:0.9;
+      cursor: url("/assets/mouse.png"), auto !important;
+    }
+
+    /* ==== Liquid Glass ==== */
+    .glass {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: .55em;
+      padding: .5em 1.1em;
+      border-radius: 16px;
+      background: linear-gradient(180deg,
+                  rgba(255,255,255,.22) 0%,
+                  rgba(255,255,255,.10) 60%,
+                  rgba(255,255,255,.06) 100%);
+      border: 1px solid rgba(255,255,255,.28);
+      backdrop-filter: blur(14px) saturate(120%);
+      -webkit-backdrop-filter: blur(14px) saturate(120%);
+      box-shadow: 0 8px 24px rgba(0,0,0,.35),
+                  inset 0 1px 0 rgba(255,255,255,.28),
+                  inset 0 -1px 0 rgba(255,255,255,.08);
+      overflow: hidden;
+    }
+    .glass::after{
+      content:"";
+      position:absolute; inset:0;
+      border-radius: inherit;
+      background: linear-gradient(120deg,
+        transparent 0%,
+        rgba(255,255,255,.7) 45%,
+        rgba(255,255,255,.9) 50%,
+        rgba(255,255,255,.7) 55%,
+        transparent 100%);
+      transform: translateX(-100%);
+      animation: shimmer 3.5s infinite;
+    }
+    @keyframes shimmer {
+      0% { transform: translateX(-100%); }
+      50% { transform: translateX(100%); }
+      100% { transform: translateX(100%); }
+    }
+    .glass .label{ font-weight:700;font-size:clamp(14px, 2vw, 20px);color:#fff;white-space:nowrap; }
+    .glass .evo{ height: 1.2em;width:auto;object-fit:contain; }
+
+    .egg-day-wrap{ margin-top:3vh; display:flex; justify-content:center; width:100%; }
+
+    /* โลโก้ */
+    .logo-left,.logo-right{ position:fixed; bottom:1vh; }
+    .logo-left{ left:1vw; } .logo-right{ right:1vw; }
+    .logo-left img,.logo-right img{ height:3vh;width:auto;object-fit:contain; }
+
+    /* Cursor ปลอม */
+    .touch-cursor {
+      position: fixed; width: 40px; height: 40px;
+      background: url("/assets/mouse.png") no-repeat center center / contain;
+      pointer-events:none; transform:translate(-50%,-50%);
+      z-index:9999; display:none;
+    }
+
+    /* Popup Letter */
+    .popup {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.55);
+      display: flex; justify-content: center; align-items: center;
+      z-index: 9999;
+    }
+    .popup-content { background: transparent; border-radius: 12px; max-width: 90%; max-height: 90%; text-align:center; }
+    .popup-content img { width:100%; height:auto; border-radius:12px; }
+    .popup-buttons { margin-top:10px; display:flex; justify-content:center; gap:8px; flex-wrap:wrap; }
+    .countdown { font-size:14px; color:#fff; margin-left:8px; }
   </style>
 </head>
 <body>
   <div class="page" id="page-root">
-    <div class="viewer-wrap" id="viewer-wrap">
+    <!-- การ์ดโมเดล -->
+    <div class="viewer-card">
       <model-viewer id="mv"
-        src="/assets/model.glb"
-        ios-src="/assets/model.usdz"
-        alt="AR Egg Phase"
-        ar
-        ar-modes="webxr scene-viewer quick-look"
+        src="/assets/model1.glb"
+        ios-src="/assets/model1.usdz"
+        alt="Special of ZNN"
+        ar ar-modes="webxr scene-viewer quick-look"
         environment-image="neutral"
-        camera-controls
-        autoplay
-        exposure="1"
-        shadow-intensity="0.8"
+        camera-controls autoplay
+        exposure="1" shadow-intensity="1" shadow-softness="0.9"
       ></model-viewer>
     </div>
 
-    <div class="footer">
-      <div style="font-size:13px">AR Egg Phase 🐶 ❤️ 🐱 = 🥚</div>
-      <div style="display:flex;gap:8px">
+    <!-- Egg Day + evo -->
+    <div class="egg-day-wrap">
+      <div class="glass">
+        <img class="evo" src="/assets/imageevo01.png" alt="Evolution">
+        <span class="label">EGG DAY : 02</span>
+      </div>
+    </div>
+
+    <!-- โลโก้ -->
+    <div class="logo-left"><img src="/assets/logoimage1.png" alt="Logo Left"></div>
+    <div class="logo-right"><img src="/assets/logoimage2.png" alt="Logo Right"></div>
+
+    <!-- Cursor ปลอม -->
+    <div class="touch-cursor" id="touchCursor"></div>
+  </div>
+
+  <!-- Popup Letter -->
+  <div id="letterPopup" class="popup">
+    <div class="popup-content">
+      <img id="letterImage" src="/assets/letter_v1_th.jpg" alt="Letter">
+      <div class="popup-buttons">
+        <button id="closePopup">ปิด</button>
+        <button id="dontShowAgain">ไม่ต้องแสดงอีก</button>
+        <button id="langTH">TH</button>
+        <button id="langEN">EN</button>
+        <span class="countdown" id="countdownTimer"></span>
       </div>
     </div>
   </div>
@@ -54,61 +168,70 @@
   import { GLTFLoader } from 'https://unpkg.com/three@0.164.0/examples/jsm/loaders/GLTFLoader.js';
 
   document.addEventListener('DOMContentLoaded', () => {
-    const mv = document.getElementById('mv');
-    const page = document.getElementById('page-root');
-    const enterARBtn = document.getElementById('enter-ar');
+    const mv=document.getElementById('mv'),page=document.getElementById('page-root');
 
-    // Hide gradient when AR is active
-    mv.addEventListener('ar-status', (evt) => {
-      const status = evt.detail?.status || '';
-      if(status.includes('session-started') || status.includes('presenting') || status.includes('in-ar')){
-        page.classList.add('ar-active');
-      }else{
-        page.classList.remove('ar-active');
-      }
+    mv.addEventListener('ar-status',(e)=>{
+      const status=e.detail?.status||'';
+      if(status.includes('session-started')||status.includes('presenting')||status.includes('in-ar')) page.classList.add('ar-active');
+      else page.classList.remove('ar-active');
     });
 
-    // Play all animations (best effort)
+    // เล่นทุกอนิเมชัน
     async function tryPlayAllAnimations(){
       try{
-        const loader = new GLTFLoader();
-        const gltf = await new Promise((res,rej)=> loader.load('/assets/model.glb', res, undefined, rej));
-        if(!gltf.animations || gltf.animations.length===0) return;
-        const internalModel = mv.scene;
-        if(!internalModel) return;
-        const mixer = new THREE.AnimationMixer(internalModel);
-        gltf.animations.forEach((clip)=>{
-          const action = mixer.clipAction(clip);
-          action.reset(); action.play(); action.setLoop(THREE.LoopRepeat, Infinity);
-        });
-        let prev = performance.now();
-        function tick(){
-          const now = performance.now();
-          const delta = (now-prev)/1000; prev=now;
-          mixer.update(delta);
-          requestAnimationFrame(tick);
-        }
+        const loader=new GLTFLoader();
+        const gltf=await new Promise((res,rej)=>loader.load('/assets/model1.glb',res,undefined,rej));
+        if(!gltf.animations||gltf.animations.length===0) return;
+        const internalModel=mv.scene; if(!internalModel) return;
+        const mixer=new THREE.AnimationMixer(internalModel);
+        gltf.animations.forEach((clip)=>{ const action=mixer.clipAction(clip); action.reset(); action.play(); action.setLoop(THREE.LoopRepeat,Infinity); });
+        let prev=performance.now();
+        function tick(){ const now=performance.now(); const delta=(now-prev)/1000; prev=now; mixer.update(delta); requestAnimationFrame(tick);}
         requestAnimationFrame(tick);
-      }catch(err){console.warn('Animation error', err)}
+      }catch(err){console.warn('Animation error',err)}
     }
-    mv.addEventListener('load', ()=>{ tryPlayAllAnimations(); });
+    mv.addEventListener('load',()=>{ tryPlayAllAnimations(); });
 
-    // Universal AR button
-    enterARBtn.addEventListener('click', ()=>{
-      const ua = navigator.userAgent.toLowerCase();
-      if(/iphone|ipad|ipod/.test(ua)){
-        // iOS → Quick Look
-        window.location.href = '/assets/model.usdz';
-      } else if(/android/.test(ua)){
-        // Android → Scene Viewer intent
-        const sceneViewerUrl = `intent://arvr.google.com/scene-viewer/1.0?file=${window.location.origin}/assets/model.glb#Intent;scheme=https;package=com.google.ar.core;action=android.intent.action.VIEW;S.browser_fallback_url=${window.location.href};end;`;
-        window.location.href = sceneViewerUrl;
-      } else {
-        console.log("AR not supported on this platform. Use mobile iOS/Android.");
-      }
-    });
+    // Cursor ปลอม
+    const cursorEl=document.getElementById("touchCursor");
+    document.addEventListener("touchstart",(e)=>{const t=e.touches[0];cursorEl.style.left=t.clientX+"px";cursorEl.style.top=t.clientY+"px";cursorEl.style.display="block";});
+    document.addEventListener("touchmove",(e)=>{const t=e.touches[0];cursorEl.style.left=t.clientX+"px";cursorEl.style.top=t.clientY+"px";});
+    document.addEventListener("touchend",()=>{cursorEl.style.display="none";});
+
+    // ===== Popup Letter =====
+    const popup=document.getElementById("letterPopup"),
+          closeBtn=document.getElementById("closePopup"),
+          dontShowBtn=document.getElementById("dontShowAgain"),
+          letterImage=document.getElementById("letterImage"),
+          langTH=document.getElementById("langTH"),
+          langEN=document.getElementById("langEN"),
+          countdownEl=document.getElementById("countdownTimer");
+
+    // ✅ จุดแก้เมื่อมีจดหมายใหม่
+    const letterVersion="v1"; // 🔥 เปลี่ยนเป็น v2, v3... ตามไฟล์ที่คุณอัพ
+    const isDev=true;         // 🔥 ระหว่าง dev = true, ใช้งานจริง = false
+
+    letterImage.src=`/assets/letter_${letterVersion}_th.jpg`;
+
+    let timeLeft=120,timer;
+    function showPopup(){
+      popup.style.display="flex"; timeLeft=120;
+      countdownEl.textContent=`(Auto close in ${timeLeft}s)`;
+      timer=setInterval(()=>{timeLeft--; countdownEl.textContent=`(Auto close in ${timeLeft}s)`; if(timeLeft<=0){clearInterval(timer); popup.style.display="none";}},1000);
+    }
+    function hidePopup(){clearInterval(timer); popup.style.display="none";}
+
+    if(isDev){ showPopup(); }
+    else{
+      const storageKey=`hideLetter_${letterVersion}`;
+      if(localStorage.getItem(storageKey)!=="true"){ showPopup(); }
+    }
+
+    closeBtn.onclick=()=>hidePopup();
+    dontShowBtn.onclick=()=>{ hidePopup(); if(!isDev){ const storageKey=`hideLetter_${letterVersion}`; localStorage.setItem(storageKey,"true"); }};
+    langTH.onclick=()=>{ letterImage.src=`/assets/letter_${letterVersion}_th.jpg`; }
+    langEN.onclick=()=>{ letterImage.src=`/assets/letter_${letterVersion}_en.jpg`; }
   });
   </script>
 </body>
 </html>
-
