@@ -4,7 +4,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <title>Special of ZNN</title>
-  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+  <!-- โมเดล viewer -->
+  <script src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
   <style>
     :root{
       --bg-top: #212121;
@@ -30,7 +31,7 @@
     }
     .page.ar-active{ background:transparent; }
 
-    /* กล่องโมเดล */
+    /* การ์ดโมเดล */
     .viewer-card{
       width:100%;
       max-width:900px;
@@ -46,7 +47,6 @@
       background:transparent;
       shadow-intensity:1;
       shadow-softness:0.9;
-      cursor: url("/assets/mouse.png"), auto !important; /* Cursor บนการ์ด */
     }
 
     /* Egg Day */
@@ -56,16 +56,19 @@
       justify-content:center;
       width:100%;
     }
-    .egg-day{
-      font-weight:700;
-      font-size: clamp(14px, 2vw, 20px);
-      background: rgba(255,255,255,0.15);
-      padding: 6px 14px;
-      border-radius: 12px;
-      backdrop-filter: blur(10px);
+    .glass {
+      padding: .5em 1.1em;
+      border-radius: 16px;
+      background: rgba(255,255,255,.15);
+      backdrop-filter: blur(14px);
+      display:flex;
+      gap:.5em;
+      align-items:center;
     }
+    .glass .evo{ height:1.2em; }
+    .glass .label{ font-weight:700; }
 
-    /* โลโก้ซ้าย-ขวาล่าง */
+    /* โลโก้ซ้าย-ขวา */
     .logo-left,
     .logo-right{
       position:fixed;
@@ -77,10 +80,9 @@
     .logo-right img{
       height:3vh;
       width:auto;
-      object-fit:contain;
     }
 
-    /* Cursor ปลอมบนมือถือ */
+    /* Cursor มือถือ */
     .touch-cursor {
       position: fixed;
       width: 40px;
@@ -92,97 +94,62 @@
       display: none;
     }
 
-    /* ==== Pop-up จดหมาย ==== */
-    .popup-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.6);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 10000;
+    /* Popup Letter */
+    .popup-overlay{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,0.7);
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      z-index:10000;
     }
-    .popup-box {
-      position: relative;
-      max-height: 60vh;
-      max-width: 90vw;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
+    .popup-card{
+      position:relative;
+      max-height:60vh;
+      max-width:90vw;
+      background:#fff;
+      border-radius:12px;
+      padding:1em;
+      text-align:center;
     }
-    .popup-box img {
-      max-height: 60vh;
-      max-width: 100%;
-      height: auto;
-      width: auto;
-      border-radius: 12px;
-      display: block;
+    .popup-card img{
+      max-height:55vh;
+      max-width:85vw;
+      object-fit:contain;
     }
-    .popup-close {
-      position: absolute;
-      top: -30px;
-      right: -10px;
-      background: #ff4444;
-      border: none;
-      color: #fff;
-      font-weight: bold;
-      font-size: 14px;
-      padding: 6px 10px;
-      border-radius: 6px;
-      cursor: pointer;
+    .popup-controls{
+      margin-top:.5em;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
     }
-    .popup-lang {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 5px;
+    .lang-buttons button{
+      margin:0 .25em;
+      padding:.25em .75em;
+      border:none;
+      border-radius:6px;
+      cursor:pointer;
     }
-    .popup-lang button {
-      padding: 4px 10px;
-      font-size: 13px;
-      font-weight: bold;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      background: #fff;
-      color: #000;
+    .close-btn{
+      position:absolute;
+      top:.5em; right:.5em;
+      cursor:pointer;
+      font-size:18px;
+      background:#fff;
+      border-radius:50%;
+      padding:.2em .5em;
     }
-    .popup-footer {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      align-items: center;
-      font-size: 13px;
-    }
-    .popup-hide {
-      background: rgba(255,255,255,0.2);
-      border: none;
-      color: #fff;
-      padding: 4px 10px;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-
-    /* Dev Mode Alert */
-    .dev-alert {
-      position: fixed;
-      bottom: 10px;
-      right: 10px;
-      background: rgba(255, 200, 0, 0.9);
-      color: #000;
-      font-size: 13px;
-      font-weight: 600;
-      padding: 6px 10px;
-      border-radius: 6px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-      z-index: 11000;
-      display: none;
+    .countdown{
+      margin-top:.5em;
+      font-size:14px;
+      color:#333;
     }
   </style>
 </head>
 <body>
   <div class="page" id="page-root">
-    <!-- กล่องโมเดล -->
+    <!-- การ์ดโมเดล -->
     <div class="viewer-card">
       <model-viewer id="mv"
         src="/assets/model1.glb"
@@ -190,7 +157,6 @@
         alt="Special of ZNN"
         ar
         ar-modes="webxr scene-viewer quick-look"
-        environment-image="neutral"
         camera-controls
         autoplay
         exposure="1"
@@ -201,85 +167,101 @@
 
     <!-- Egg Day -->
     <div class="egg-day-wrap">
-      <div class="egg-day">EGG DAY : 02</div>
+      <div class="glass">
+        <img class="evo" src="/assets/imageevo01.png" alt="Evolution">
+        <span class="label">EGG DAY : 02</span>
+      </div>
     </div>
 
-    <!-- โลโก้ซ้าย/ขวาล่าง -->
-    <div class="logo-left">
-      <img src="/assets/logoimage1.png" alt="Logo Left">
-    </div>
-    <div class="logo-right">
-      <img src="/assets/logoimage2.png" alt="Logo Right">
-    </div>
+    <!-- โลโก้ -->
+    <div class="logo-left"><img src="/assets/logoimage1.png"></div>
+    <div class="logo-right"><img src="/assets/logoimage2.png"></div>
 
-    <!-- Cursor ปลอมบนมือถือ -->
+    <!-- Cursor มือถือ -->
     <div class="touch-cursor" id="touchCursor"></div>
   </div>
 
-  <!-- Pop-up Letter -->
+  <!-- Popup Letter -->
   <div class="popup-overlay" id="popupOverlay" style="display:none;">
-    <div class="popup-box">
-      <button class="popup-close" id="popupClose">X</button>
-      <div class="popup-lang">
-        <button id="langTH">TH</button>
-        <button id="langEN">EN</button>
+    <div class="popup-card">
+      <div class="close-btn" id="popupClose">✕</div>
+      <div class="lang-buttons">
+        <button id="btn-th">TH</button>
+        <button id="btn-en">EN</button>
       </div>
-      <img id="letterImage" src="/assets/letter_v1_th.jpg" alt="Letter">
-      <div class="popup-footer">
-        <button class="popup-hide" id="popupHide">ไม่แสดงอีก</button>
-        <div id="countdownText">ปิดอัตโนมัติใน 120 วินาที</div>
+      <img id="popupImg" src="/assets/letter_v1_th.jpg" alt="Letter">
+      <div class="popup-controls">
+        <label><input type="checkbox" id="doNotShow"> Do not show again</label>
       </div>
+      <div class="countdown" id="countdown"></div>
     </div>
   </div>
 
-  <!-- Dev Alert -->
-  <div class="dev-alert" id="devAlert">
-    ⚠ Dev Mode: Pop-up จะโชว์ทุกครั้ง
-  </div>
+  <script>
+    // === CONFIG ===
+    const DEV_MODE = true; // ← แก้ตรงนี้: true = โหมด Dev (popup แสดงทุกครั้ง), false = โหมดจริง
+    const LETTER_VERSION = "v1"; // ← แก้ตรงนี้เวลาเปลี่ยนเวอร์ชัน
 
-  <script type="module">
-  import * as THREE from 'https://unpkg.com/three@0.164.0/build/three.module.js';
-  import { GLTFLoader } from 'https://unpkg.com/three@0.164.0/examples/jsm/loaders/GLTFLoader.js';
+    // === Popup Logic ===
+    const overlay = document.getElementById("popupOverlay");
+    const closeBtn = document.getElementById("popupClose");
+    const popupImg = document.getElementById("popupImg");
+    const doNotShow = document.getElementById("doNotShow");
+    const countdownEl = document.getElementById("countdown");
 
-  document.addEventListener('DOMContentLoaded', () => {
-    const mv = document.getElementById('mv');
-    const page = document.getElementById('page-root');
+    const btnTh = document.getElementById("btn-th");
+    const btnEn = document.getElementById("btn-en");
 
-    // === Model AR ===
-    mv.addEventListener('ar-status', (evt) => {
-      const status = evt.detail?.status || '';
-      if(status.includes('session-started') || status.includes('presenting') || status.includes('in-ar')){
-        page.classList.add('ar-active');
+    const key = "popupDismissed_" + LETTER_VERSION;
+
+    function showPopup(){
+      overlay.style.display = "flex";
+      startCountdown();
+    }
+    function hidePopup(){
+      overlay.style.display = "none";
+      stopCountdown();
+    }
+
+    // Countdown
+    let timer, timeLeft = 120;
+    function startCountdown(){
+      timeLeft = 120;
+      countdownEl.textContent = "Auto close in " + timeLeft + "s";
+      timer = setInterval(()=>{
+        timeLeft--;
+        countdownEl.textContent = "Auto close in " + timeLeft + "s";
+        if(timeLeft<=0){ hidePopup(); clearInterval(timer); }
+      },1000);
+    }
+    function stopCountdown(){
+      clearInterval(timer);
+    }
+
+    // Event
+    closeBtn.addEventListener("click", ()=> hidePopup());
+    doNotShow.addEventListener("change", (e)=>{
+      if(e.target.checked){
+        localStorage.setItem(key,"true");
       }else{
-        page.classList.remove('ar-active');
+        localStorage.removeItem(key);
+      }
+    });
+    btnTh.addEventListener("click", ()=> popupImg.src=`/assets/letter_${LETTER_VERSION}_th.jpg`);
+    btnEn.addEventListener("click", ()=> popupImg.src=`/assets/letter_${LETTER_VERSION}_en.jpg`);
+
+    // Init
+    window.addEventListener("load", ()=>{
+      if(DEV_MODE){
+        showPopup();
+      }else{
+        if(!localStorage.getItem(key)){
+          showPopup();
+        }
       }
     });
 
-    async function tryPlayAllAnimations(){
-      try{
-        const loader = new GLTFLoader();
-        const gltf = await new Promise((res,rej)=> loader.load('/assets/model1.glb', res, undefined, rej));
-        if(!gltf.animations || gltf.animations.length===0) return;
-        const internalModel = mv.scene;
-        if(!internalModel) return;
-        const mixer = new THREE.AnimationMixer(internalModel);
-        gltf.animations.forEach((clip)=>{
-          const action = mixer.clipAction(clip);
-          action.reset(); action.play(); action.setLoop(THREE.LoopRepeat, Infinity);
-        });
-        let prev = performance.now();
-        function tick(){
-          const now = performance.now();
-          const delta = (now-prev)/1000; prev=now;
-          mixer.update(delta);
-          requestAnimationFrame(tick);
-        }
-        requestAnimationFrame(tick);
-      }catch(err){console.warn('Animation error', err)}
-    }
-    mv.addEventListener('load', ()=>{ tryPlayAllAnimations(); });
-
-    // Cursor ปลอมบนมือถือ
+    // Cursor มือถือ
     const cursorEl = document.getElementById("touchCursor");
     document.addEventListener("touchstart", (e) => {
       const touch = e.touches[0];
@@ -295,59 +277,6 @@
     document.addEventListener("touchend", () => {
       cursorEl.style.display = "none";
     });
-
-    // === Pop-up Logic ===
-    const devMode = true; // ✅ เปิด/ปิด Dev Mode ที่นี่
-    const letterVersion = "v1"; // ✅ เปลี่ยนเลขเวอร์ชันที่นี่ (v2, v3, ...)
-    const popupOverlay = document.getElementById("popupOverlay");
-    const popupClose = document.getElementById("popupClose");
-    const popupHide = document.getElementById("popupHide");
-    const letterImage = document.getElementById("letterImage");
-    const langTH = document.getElementById("langTH");
-    const langEN = document.getElementById("langEN");
-    const countdownText = document.getElementById("countdownText");
-    const devAlert = document.getElementById("devAlert");
-
-    if (devMode) devAlert.style.display = "block";
-
-    const storageKey = "hideLetter_" + letterVersion;
-    let countdownTimer;
-    let remaining = 120;
-
-    function showPopup(){
-      popupOverlay.style.display = "flex";
-      remaining = 120;
-      countdownText.textContent = "ปิดอัตโนมัติใน " + remaining + " วินาที";
-      countdownTimer = setInterval(()=>{
-        remaining--;
-        countdownText.textContent = "ปิดอัตโนมัติใน " + remaining + " วินาที";
-        if(remaining <= 0){
-          closePopup();
-        }
-      },1000);
-    }
-    function closePopup(){
-      popupOverlay.style.display = "none";
-      clearInterval(countdownTimer);
-    }
-
-    popupClose.onclick = ()=> closePopup();
-    popupHide.onclick = ()=>{
-      localStorage.setItem(storageKey, "true");
-      closePopup();
-    };
-
-    langTH.onclick = ()=>{ letterImage.src = "/assets/letter_" + letterVersion + "_th.jpg"; };
-    langEN.onclick = ()=>{ letterImage.src = "/assets/letter_" + letterVersion + "_en.jpg"; };
-
-    if (devMode){
-      showPopup();
-    } else {
-      if(!localStorage.getItem(storageKey)){
-        showPopup();
-      }
-    }
-  });
   </script>
 </body>
 </html>
