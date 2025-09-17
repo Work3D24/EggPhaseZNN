@@ -18,7 +18,7 @@
       font-family: Inter, Roboto, system-ui, -apple-system, "Segoe UI";
       color:#fff;
       background:linear-gradient(to bottom,var(--bg-top) 0%, var(--bg-top) 70%, var(--bg-bottom) 100%);
-      cursor: url("/assets/mouse.png"), auto;
+      cursor: url("/assets/mouse.png"), auto; /* Desktop cursor */
     }
 
     .page{
@@ -30,6 +30,7 @@
     }
     .page.ar-active{ background:transparent; }
 
+    /* กล่องโมเดล */
     .viewer-card{
       width:100%;
       max-width:900px;
@@ -45,43 +46,26 @@
       background:transparent;
       shadow-intensity:1;
       shadow-softness:0.9;
-      cursor: url("/assets/mouse.png"), auto !important;
+      cursor: url("/assets/mouse.png"), auto !important; /* Cursor บนการ์ด */
     }
 
-    .glass {
-      position: relative;
-      display: inline-flex;
-      align-items: center;
-      gap: .55em;
-      padding: .5em 1.1em;
-      border-radius: 16px;
-      background: rgba(255,255,255,.15);
-      border: 1px solid rgba(255,255,255,.28);
-      backdrop-filter: blur(14px) saturate(120%);
-      -webkit-backdrop-filter: blur(14px) saturate(120%);
-      box-shadow: 0 8px 24px rgba(0,0,0,.35);
-      overflow: hidden;
-    }
-
-    .glass .label{
-      font-weight:700;
-      font-size: clamp(14px, 2vw, 20px);
-      color:#fff;
-      white-space: nowrap;
-    }
-    .glass .evo{
-      height: 1.2em;
-      width: auto;
-      object-fit: contain;
-    }
-
+    /* Egg Day */
     .egg-day-wrap{
       margin-top: 3vh;
       display:flex;
       justify-content:center;
       width:100%;
     }
+    .egg-day{
+      font-weight:700;
+      font-size: clamp(14px, 2vw, 20px);
+      background: rgba(255,255,255,0.15);
+      padding: 6px 14px;
+      border-radius: 12px;
+      backdrop-filter: blur(10px);
+    }
 
+    /* โลโก้ซ้าย-ขวาล่าง */
     .logo-left,
     .logo-right{
       position:fixed;
@@ -96,6 +80,7 @@
       object-fit:contain;
     }
 
+    /* Cursor ปลอมบนมือถือ */
     .touch-cursor {
       position: fixed;
       width: 40px;
@@ -111,66 +96,87 @@
     .popup-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.65);
+      background: rgba(0,0,0,0.6);
       display: flex;
-      align-items: center;
       justify-content: center;
+      align-items: center;
       z-index: 10000;
     }
-    .popup {
+    .popup-box {
       position: relative;
       max-height: 60vh;
       max-width: 90vw;
-      border-radius: 12px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 10px;
-      background: rgba(0,0,0,0.4);
-      backdrop-filter: blur(12px);
-    }
-    .popup img {
-      max-height: 60vh;
-      max-width: 85vw;
-      object-fit: contain;
-      border-radius: 8px;
-    }
-    .popup-header {
-      display: flex;
-      justify-content: center;
       gap: 10px;
-      margin-bottom: 8px;
     }
-    .popup-header button {
-      background: rgba(255,255,255,0.8);
-      border: none;
-      border-radius: 6px;
-      padding: 4px 10px;
-      cursor: pointer;
-      font-weight: 600;
+    .popup-box img {
+      max-height: 60vh;
+      max-width: 100%;
+      height: auto;
+      width: auto;
+      border-radius: 12px;
+      display: block;
     }
     .popup-close {
       position: absolute;
-      top: 8px;
-      right: 8px;
-      background: rgba(255,255,255,0.8);
+      top: -30px;
+      right: -10px;
+      background: #ff4444;
       border: none;
-      border-radius: 50%;
-      width: 28px;
-      height: 28px;
-      cursor: pointer;
+      color: #fff;
       font-weight: bold;
+      font-size: 14px;
+      padding: 6px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .popup-lang {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 5px;
+    }
+    .popup-lang button {
+      padding: 4px 10px;
+      font-size: 13px;
+      font-weight: bold;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      background: #fff;
+      color: #000;
     }
     .popup-footer {
-      margin-top: 6px;
-      text-align: center;
-      font-size: 14px;
-    }
-    .popup-footer label {
       display: flex;
-      align-items: center;
+      flex-direction: column;
       gap: 6px;
+      align-items: center;
+      font-size: 13px;
+    }
+    .popup-hide {
+      background: rgba(255,255,255,0.2);
+      border: none;
+      color: #fff;
+      padding: 4px 10px;
+      border-radius: 6px;
       cursor: pointer;
+    }
+
+    /* Dev Mode Alert */
+    .dev-alert {
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+      background: rgba(255, 200, 0, 0.9);
+      color: #000;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 6px 10px;
+      border-radius: 6px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      z-index: 11000;
+      display: none;
     }
   </style>
 </head>
@@ -193,12 +199,9 @@
       ></model-viewer>
     </div>
 
-    <!-- Egg Day + evo -->
+    <!-- Egg Day -->
     <div class="egg-day-wrap">
-      <div class="glass">
-        <img class="evo" src="/assets/imageevo01.png" alt="Evolution">
-        <span class="label">EGG DAY : 02</span>
-      </div>
+      <div class="egg-day">EGG DAY : 02</div>
     </div>
 
     <!-- โลโก้ซ้าย/ขวาล่าง -->
@@ -214,19 +217,24 @@
   </div>
 
   <!-- Pop-up Letter -->
-  <div class="popup-overlay" id="letterPopup" style="display:none;">
-    <div class="popup">
-      <button class="popup-close" id="popupClose">×</button>
-      <div class="popup-header">
-        <button id="btnTH">TH</button>
-        <button id="btnEN">EN</button>
+  <div class="popup-overlay" id="popupOverlay" style="display:none;">
+    <div class="popup-box">
+      <button class="popup-close" id="popupClose">X</button>
+      <div class="popup-lang">
+        <button id="langTH">TH</button>
+        <button id="langEN">EN</button>
       </div>
       <img id="letterImage" src="/assets/letter_v1_th.jpg" alt="Letter">
       <div class="popup-footer">
-        <label><input type="checkbox" id="doNotShow"> Do not show again</label>
-        <div id="countdown">Auto close in 120s</div>
+        <button class="popup-hide" id="popupHide">ไม่แสดงอีก</button>
+        <div id="countdownText">ปิดอัตโนมัติใน 120 วินาที</div>
       </div>
     </div>
+  </div>
+
+  <!-- Dev Alert -->
+  <div class="dev-alert" id="devAlert">
+    ⚠ Dev Mode: Pop-up จะโชว์ทุกครั้ง
   </div>
 
   <script type="module">
@@ -237,7 +245,7 @@
     const mv = document.getElementById('mv');
     const page = document.getElementById('page-root');
 
-    // --- AR background toggle ---
+    // === Model AR ===
     mv.addEventListener('ar-status', (evt) => {
       const status = evt.detail?.status || '';
       if(status.includes('session-started') || status.includes('presenting') || status.includes('in-ar')){
@@ -247,7 +255,6 @@
       }
     });
 
-    // --- Animation loader ---
     async function tryPlayAllAnimations(){
       try{
         const loader = new GLTFLoader();
@@ -272,7 +279,7 @@
     }
     mv.addEventListener('load', ()=>{ tryPlayAllAnimations(); });
 
-    // --- Cursor ปลอมบนมือถือ ---
+    // Cursor ปลอมบนมือถือ
     const cursorEl = document.getElementById("touchCursor");
     document.addEventListener("touchstart", (e) => {
       const touch = e.touches[0];
@@ -289,46 +296,57 @@
       cursorEl.style.display = "none";
     });
 
-    // --- Pop-up จดหมาย ---
-    const version = "v1"; // <<< ตรงนี้คือจุดที่คุณแก้เลขเวอร์ชัน (เปลี่ยน v1 → v2 → v3 …)
-    const popup = document.getElementById("letterPopup");
-    const closeBtn = document.getElementById("popupClose");
-    const doNotShow = document.getElementById("doNotShow");
-    const letterImg = document.getElementById("letterImage");
-    const btnTH = document.getElementById("btnTH");
-    const btnEN = document.getElementById("btnEN");
-    const countdownEl = document.getElementById("countdown");
+    // === Pop-up Logic ===
+    const devMode = true; // ✅ เปิด/ปิด Dev Mode ที่นี่
+    const letterVersion = "v1"; // ✅ เปลี่ยนเลขเวอร์ชันที่นี่ (v2, v3, ...)
+    const popupOverlay = document.getElementById("popupOverlay");
+    const popupClose = document.getElementById("popupClose");
+    const popupHide = document.getElementById("popupHide");
+    const letterImage = document.getElementById("letterImage");
+    const langTH = document.getElementById("langTH");
+    const langEN = document.getElementById("langEN");
+    const countdownText = document.getElementById("countdownText");
+    const devAlert = document.getElementById("devAlert");
 
-    let countdown = 120;
+    if (devMode) devAlert.style.display = "block";
+
+    const storageKey = "hideLetter_" + letterVersion;
     let countdownTimer;
+    let remaining = 120;
 
     function showPopup(){
-      if(localStorage.getItem("hideLetter_"+version)) return;
-      popup.style.display = "flex";
-      countdown = 120;
-      countdownEl.textContent = "Auto close in " + countdown + "s";
+      popupOverlay.style.display = "flex";
+      remaining = 120;
+      countdownText.textContent = "ปิดอัตโนมัติใน " + remaining + " วินาที";
       countdownTimer = setInterval(()=>{
-        countdown--;
-        countdownEl.textContent = "Auto close in " + countdown + "s";
-        if(countdown <= 0){
+        remaining--;
+        countdownText.textContent = "ปิดอัตโนมัติใน " + remaining + " วินาที";
+        if(remaining <= 0){
           closePopup();
         }
       },1000);
     }
-
     function closePopup(){
-      popup.style.display = "none";
+      popupOverlay.style.display = "none";
       clearInterval(countdownTimer);
-      if(doNotShow.checked){
-        localStorage.setItem("hideLetter_"+version,true);
-      }
     }
 
-    closeBtn.addEventListener("click", closePopup);
-    btnTH.addEventListener("click", ()=>{ letterImg.src = "/assets/letter_"+version+"_th.jpg"; });
-    btnEN.addEventListener("click", ()=>{ letterImg.src = "/assets/letter_"+version+"_en.jpg"; });
+    popupClose.onclick = ()=> closePopup();
+    popupHide.onclick = ()=>{
+      localStorage.setItem(storageKey, "true");
+      closePopup();
+    };
 
-    showPopup();
+    langTH.onclick = ()=>{ letterImage.src = "/assets/letter_" + letterVersion + "_th.jpg"; };
+    langEN.onclick = ()=>{ letterImage.src = "/assets/letter_" + letterVersion + "_en.jpg"; };
+
+    if (devMode){
+      showPopup();
+    } else {
+      if(!localStorage.getItem(storageKey)){
+        showPopup();
+      }
+    }
   });
   </script>
 </body>
