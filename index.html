@@ -113,94 +113,109 @@
   </div>
 
   <script type="module">
-    import * as THREE from 'https://unpkg.com/three@0.164.0/build/three.module.js';
-    import { GLTFLoader } from 'https://unpkg.com/three@0.164.0/examples/jsm/loaders/GLTFLoader.js';
+  import * as THREE from 'https://unpkg.com/three@0.164.0/build/three.module.js';
+  import { GLTFLoader } from 'https://unpkg.com/three@0.164.0/examples/jsm/loaders/GLTFLoader.js';
 
-    // ==== CONFIG ====
-    const DEV_MODE = true;  // true = dev mode
-    const LETTER_VERSION = "v1"; // แก้เลขนี้เวลาเปลี่ยนเวอร์ชัน
+  // ==== CONFIG ====
+  const DEV_MODE = true;  // true = dev mode (ระหว่างพัฒนา)
+  const LETTER_VERSION = "v1"; // แก้เลขนี้เวลาเปลี่ยนเวอร์ชัน
 
-    // Popup refs
-    const overlay=document.getElementById("popupOverlay");
-    const closeBtn=document.getElementById("popupClose");
-    const popupImg=document.getElementById("popupImg");
-    const doNotShow=document.getElementById("doNotShow");
-    const countdownEl=document.getElementById("countdown");
-    const btnTh=document.getElementById("btn-th");
-    const btnEn=document.getElementById("btn-en");
-    const key="popupDismissed_"+LETTER_VERSION;
+  // Popup refs
+  const overlay=document.getElementById("popupOverlay");
+  const closeBtn=document.getElementById("popupClose");
+  const popupImg=document.getElementById("popupImg");
+  const doNotShow=document.getElementById("doNotShow");
+  const countdownEl=document.getElementById("countdown");
+  const btnTh=document.getElementById("btn-th");
+  const btnEn=document.getElementById("btn-en");
+  const key="popupDismissed_"+LETTER_VERSION;
 
-    function showPopup(){overlay.style.display="flex";startCountdown();}
-    function hidePopup(){overlay.style.display="none";stopCountdown();}
-    let timer,timeLeft=120;
-    function startCountdown(){
-      timeLeft=120;
+  function showPopup(){
+    console.log("Popup: show");
+    overlay.style.display="flex";
+    startCountdown();
+  }
+  function hidePopup(){
+    console.log("Popup: hide");
+    overlay.style.display="none";
+    stopCountdown();
+  }
+
+  let timer,timeLeft=120;
+  function startCountdown(){
+    timeLeft=120;
+    countdownEl.textContent="Auto close in "+timeLeft+"s";
+    timer=setInterval(()=>{
+      timeLeft--;
       countdownEl.textContent="Auto close in "+timeLeft+"s";
-      timer=setInterval(()=>{
-        timeLeft--;
-        countdownEl.textContent="Auto close in "+timeLeft+"s";
-        if(timeLeft<=0){hidePopup();clearInterval(timer);}
-      },1000);
+      if(timeLeft<=0){hidePopup();clearInterval(timer);}
+    },1000);
+  }
+  function stopCountdown(){clearInterval(timer);}
+
+  closeBtn.addEventListener("click", hidePopup);
+  doNotShow.addEventListener("change",(e)=>{
+    if(e.target.checked){localStorage.setItem(key,"true");}
+    else{localStorage.removeItem(key);}
+  });
+  btnTh.addEventListener("click",()=>popupImg.src=`/assets/letter_${LETTER_VERSION}_th.jpg`);
+  btnEn.addEventListener("click",()=>popupImg.src=`/assets/letter_${LETTER_VERSION}_en.jpg`);
+
+  // 🔥 ใช้ DOMContentLoaded แทน load
+  document.addEventListener("DOMContentLoaded",()=>{
+    console.log("Page ready, check popup condition...");
+    if(DEV_MODE){ 
+      showPopup();
+    } else if(!localStorage.getItem(key)){
+      showPopup();
     }
-    function stopCountdown(){clearInterval(timer);}
+  });
 
-    closeBtn.addEventListener("click", hidePopup);
-    doNotShow.addEventListener("change",(e)=>{
-      if(e.target.checked){localStorage.setItem(key,"true");}
-      else{localStorage.removeItem(key);}
-    });
-    btnTh.addEventListener("click",()=>popupImg.src=`/assets/letter_${LETTER_VERSION}_th.jpg`);
-    btnEn.addEventListener("click",()=>popupImg.src=`/assets/letter_${LETTER_VERSION}_en.jpg`);
+  // Cursor มือถือ + mouse click
+  const cursorEl=document.getElementById("touchCursor");
+  document.addEventListener("touchstart",(e)=>{
+    const t=e.touches[0];cursorEl.style.left=t.clientX+"px";cursorEl.style.top=t.clientY+"px";cursorEl.style.display="block";
+  });
+  document.addEventListener("touchmove",(e)=>{
+    const t=e.touches[0];cursorEl.style.left=t.clientX+"px";cursorEl.style.top=t.clientY+"px";
+  });
+  document.addEventListener("touchend",()=>cursorEl.style.display="none");
+  document.addEventListener("click",()=>{cursorEl.style.display="none";});
 
-    window.addEventListener("load",()=>{
-      if(DEV_MODE){showPopup();}
-      else if(!localStorage.getItem(key)){showPopup();}
-    });
+  // ==== ระบบโมเดล (คงเดิม) ====
+  const mv=document.getElementById('mv');
+  const page=document.getElementById('page-root');
+  mv.addEventListener('ar-status',(evt)=>{
+    const status=evt.detail?.status||'';
+    if(status.includes('session-started')||status.includes('presenting')||status.includes('in-ar')){
+      page.classList.add('ar-active');
+    }else{page.classList.remove('ar-active');}
+  });
 
-    // Cursor มือถือ + mouse click
-    const cursorEl=document.getElementById("touchCursor");
-    document.addEventListener("touchstart",(e)=>{
-      const t=e.touches[0];cursorEl.style.left=t.clientX+"px";cursorEl.style.top=t.clientY+"px";cursorEl.style.display="block";
-    });
-    document.addEventListener("touchmove",(e)=>{
-      const t=e.touches[0];cursorEl.style.left=t.clientX+"px";cursorEl.style.top=t.clientY+"px";
-    });
-    document.addEventListener("touchend",()=>cursorEl.style.display="none");
-    document.addEventListener("click",()=>{cursorEl.style.display="none";}); // เพิ่มให้ mouse ใช้งานได้
-
-    // ==== ระบบโมเดล ====
-    const mv=document.getElementById('mv');
-    const page=document.getElementById('page-root');
-    mv.addEventListener('ar-status',(evt)=>{
-      const status=evt.detail?.status||'';
-      if(status.includes('session-started')||status.includes('presenting')||status.includes('in-ar')){
-        page.classList.add('ar-active');
-      }else{page.classList.remove('ar-active');}
-    });
-
-    async function tryPlayAllAnimations(){
-      try{
-        const loader=new GLTFLoader();
-        const gltf=await new Promise((res,rej)=>loader.load('/assets/model.glb',res,undefined,rej));
-        if(!gltf.animations||gltf.animations.length===0) return;
-        const internalModel=mv.scene;
-        if(!internalModel) return;
-        const mixer=new THREE.AnimationMixer(internalModel);
-        gltf.animations.forEach((clip)=>{
-          const action=mixer.clipAction(clip);
-          action.reset();action.play();action.setLoop(THREE.LoopRepeat,Infinity);
-        });
-        let prev=performance.now();
-        function tick(){
-          const now=performance.now();
-          const delta=(now-prev)/1000;prev=now;
-          mixer.update(delta);
-          requestAnimationFrame(tick);
-        }
+  async function tryPlayAllAnimations(){
+    try{
+      const loader=new GLTFLoader();
+      const gltf=await new Promise((res,rej)=>loader.load('/assets/model.glb',res,undefined,rej));
+      if(!gltf.animations||gltf.animations.length===0) return;
+      const internalModel=mv.scene;
+      if(!internalModel) return;
+      const mixer=new THREE.AnimationMixer(internalModel);
+      gltf.animations.forEach((clip)=>{
+        const action=mixer.clipAction(clip);
+        action.reset();action.play();action.setLoop(THREE.LoopRepeat,Infinity);
+      });
+      let prev=performance.now();
+      function tick(){
+        const now=performance.now();
+        const delta=(now-prev)/1000;prev=now;
+        mixer.update(delta);
         requestAnimationFrame(tick);
-      }catch(err){console.warn('Animation error',err)}
-    }
-    mv.addEventListener('load',()=>{tryPlayAllAnimations();});
-  </script>
+      }
+      requestAnimationFrame(tick);
+    }catch(err){console.warn('Animation error',err)}
+  }
+  mv.addEventListener('load',()=>{tryPlayAllAnimations();});
+</script>
 </body>
 </html>
+
