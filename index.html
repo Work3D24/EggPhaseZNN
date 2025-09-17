@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>Special of ZNN</title>
+  <title>TESTZNN</title>
   <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
   <style>
     :root{
@@ -18,7 +18,7 @@
       font-family: Inter, Roboto, system-ui, -apple-system, "Segoe UI";
       color:#fff;
       background:linear-gradient(to bottom,var(--bg-top) 0%, var(--bg-top) 70%, var(--bg-bottom) 100%);
-      cursor: url("/assets/mouse.png"), auto;
+      cursor: url("/assets/mouse.png"), auto; /* Desktop cursor */
     }
 
     .page{
@@ -46,10 +46,10 @@
       background:transparent;
       shadow-intensity:1;
       shadow-softness:0.9;
-      cursor: url("/assets/mouse.png"), auto !important;
+      cursor: url("/assets/mouse.png"), auto !important; /* Cursor บนการ์ด */
     }
 
-    /* ==== Liquid Glass ==== */
+    /* ==== Liquid Glass (Apple-like + shimmer) ==== */
     .glass {
       position: relative;
       display: inline-flex;
@@ -57,6 +57,7 @@
       gap: .55em;
       padding: .5em 1.1em;
       border-radius: 16px;
+
       background: linear-gradient(180deg,
                   rgba(255,255,255,.22) 0%,
                   rgba(255,255,255,.10) 60%,
@@ -64,11 +65,32 @@
       border: 1px solid rgba(255,255,255,.28);
       backdrop-filter: blur(14px) saturate(120%);
       -webkit-backdrop-filter: blur(14px) saturate(120%);
-      box-shadow: 0 8px 24px rgba(0,0,0,.35),
-                  inset 0 1px 0 rgba(255,255,255,.28),
-                  inset 0 -1px 0 rgba(255,255,255,.08);
+
+      box-shadow:
+        0 8px 24px rgba(0,0,0,.35),
+        inset 0 1px 0 rgba(255,255,255,.28),
+        inset 0 -1px 0 rgba(255,255,255,.08);
+
       overflow: hidden;
     }
+
+    .glass::before{
+      content:"";
+      position:absolute; inset:0;
+      border-radius: inherit;
+      pointer-events:none;
+      background:
+        linear-gradient( to bottom,
+          rgba(255,255,255,.35),
+          rgba(255,255,255,0) 55%) top/100% 40% no-repeat,
+        radial-gradient(120% 100% at 0% 0%,
+          rgba(255,255,255,.35), rgba(255,255,255,0) 60%) left/55% 100% no-repeat,
+        radial-gradient(120% 100% at 100% 0%,
+          rgba(255,255,255,.35), rgba(255,255,255,0) 60%) right/55% 100% no-repeat;
+      mix-blend-mode: screen;
+      opacity:.65;
+    }
+
     .glass::after{
       content:"";
       position:absolute; inset:0;
@@ -82,54 +104,149 @@
       transform: translateX(-100%);
       animation: shimmer 3.5s infinite;
     }
+
     @keyframes shimmer {
       0% { transform: translateX(-100%); }
       50% { transform: translateX(100%); }
       100% { transform: translateX(100%); }
     }
-    .glass .label{ font-weight:700;font-size:clamp(14px, 2vw, 20px);color:#fff;white-space:nowrap; }
-    .glass .evo{ height: 1.2em;width:auto;object-fit:contain; }
 
-    .egg-day-wrap{ margin-top:3vh; display:flex; justify-content:center; width:100%; }
+    .glass > .noise {
+      position:absolute; inset:0; pointer-events:none; border-radius:inherit;
+      opacity:.08; mix-blend-mode:soft-light;
+      background-image: url("data:image/svg+xml;utf8,\
+      <svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'>\
+        <filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/></filter>\
+        <rect width='100' height='100' filter='url(%23n)' opacity='0.6'/>\
+      </svg>");
+    }
 
-    /* โลโก้ */
-    .logo-left,.logo-right{ position:fixed; bottom:1vh; }
-    .logo-left{ left:1vw; } .logo-right{ right:1vw; }
-    .logo-left img,.logo-right img{ height:3vh;width:auto;object-fit:contain; }
+    .glass .label{
+      font-weight:700;
+      font-size: clamp(14px, 2vw, 20px);
+      color:#fff;
+      white-space: nowrap;
+    }
+    .glass .evo{
+      height: 1.2em;
+      width: auto;
+      object-fit: contain;
+    }
 
-    /* Cursor ปลอม */
+    @media (prefers-reduced-transparency: reduce){
+      .glass{
+        background: rgba(255,255,255,.12);
+        backdrop-filter: none; -webkit-backdrop-filter: none;
+      }
+      .glass::before,.glass::after,.glass>.noise{ display:none; }
+    }
+
+    /* Egg Day อยู่ใต้การ์ด (เว้นห่าง 3vh) */
+    .egg-day-wrap{
+      margin-top: 3vh;
+      display:flex;
+      justify-content:center;
+      width:100%;
+    }
+
+    /* โลโก้ซ้าย-ขวาล่าง */
+    .logo-left,
+    .logo-right{
+      position:fixed;
+      bottom:1vh;
+    }
+    .logo-left{ left:1vw; }
+    .logo-right{ right:1vw; }
+    .logo-left img,
+    .logo-right img{
+      height:3vh;
+      width:auto;
+      object-fit:contain;
+    }
+
+    /* Cursor ปลอมบนมือถือ */
     .touch-cursor {
-      position: fixed; width: 40px; height: 40px;
+      position: fixed;
+      width: 40px;
+      height: 40px;
       background: url("/assets/mouse.png") no-repeat center center / contain;
-      pointer-events:none; transform:translate(-50%,-50%);
-      z-index:9999; display:none;
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+      z-index: 9999;
+      display: none;
     }
 
-    /* Popup Letter */
+    /* ==== Pop-up จดหมาย ==== */
     .popup {
-      position: fixed; inset: 0;
-      background: rgba(0,0,0,0.55);
-      display: flex; justify-content: center; align-items: center;
-      z-index: 9999;
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,0.65);
+      z-index: 10000;
     }
-    .popup-content { background: transparent; border-radius: 12px; max-width: 90%; max-height: 90%; text-align:center; }
-    .popup-content img { width:100%; height:auto; border-radius:12px; }
-    .popup-buttons { margin-top:10px; display:flex; justify-content:center; gap:8px; flex-wrap:wrap; }
-    .countdown { font-size:14px; color:#fff; margin-left:8px; }
+    .popup-content {
+      position: relative;
+      padding: 1em;
+      border-radius: 16px;
+      text-align: center;
+      max-width: 90vw;
+    }
+    .popup-content img {
+      max-height: 60vh;  /* สูงสุด 60% ของจอ */
+      width: auto;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+      border-radius: 12px;
+    }
+    .close-btn {
+      position: absolute;
+      top: .4em;
+      right: .6em;
+      background: rgba(0,0,0,0.5);
+      border: none;
+      color: #fff;
+      font-size: 20px;
+      cursor: pointer;
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      line-height: 24px;
+    }
+    .timer {
+      position: absolute;
+      top: .4em;
+      left: .6em;
+      font-size: 14px;
+      color: #fff;
+      background: rgba(0,0,0,0.5);
+      padding: 2px 6px;
+      border-radius: 6px;
+    }
+    .popup-actions {
+      margin-top: .6em;
+      font-size: 14px;
+    }
   </style>
 </head>
 <body>
   <div class="page" id="page-root">
-    <!-- การ์ดโมเดล -->
+    <!-- กล่องโมเดล -->
     <div class="viewer-card">
       <model-viewer id="mv"
         src="/assets/model1.glb"
         ios-src="/assets/model1.usdz"
         alt="Special of ZNN"
-        ar ar-modes="webxr scene-viewer quick-look"
+        ar
+        ar-modes="webxr scene-viewer quick-look"
         environment-image="neutral"
-        camera-controls autoplay
-        exposure="1" shadow-intensity="1" shadow-softness="0.9"
+        camera-controls
+        autoplay
+        exposure="1"
+        shadow-intensity="1"
+        shadow-softness="0.9"
       ></model-viewer>
     </div>
 
@@ -138,27 +255,31 @@
       <div class="glass">
         <img class="evo" src="/assets/imageevo01.png" alt="Evolution">
         <span class="label">EGG DAY : 02</span>
+        <span class="noise"></span>
       </div>
     </div>
 
     <!-- โลโก้ -->
-    <div class="logo-left"><img src="/assets/logoimage1.png" alt="Logo Left"></div>
-    <div class="logo-right"><img src="/assets/logoimage2.png" alt="Logo Right"></div>
+    <div class="logo-left">
+      <img src="/assets/logoimage1.png" alt="Logo Left">
+    </div>
+    <div class="logo-right">
+      <img src="/assets/logoimage2.png" alt="Logo Right">
+    </div>
 
-    <!-- Cursor ปลอม -->
+    <!-- Cursor ปลอมบนมือถือ -->
     <div class="touch-cursor" id="touchCursor"></div>
-  </div>
 
-  <!-- Popup Letter -->
-  <div id="letterPopup" class="popup">
-    <div class="popup-content">
-      <img id="letterImage" src="/assets/letter_v1_th.jpg" alt="Letter">
-      <div class="popup-buttons">
-        <button id="closePopup">ปิด</button>
-        <button id="dontShowAgain">ไม่ต้องแสดงอีก</button>
-        <button id="langTH">TH</button>
-        <button id="langEN">EN</button>
-        <span class="countdown" id="countdownTimer"></span>
+    <!-- Pop-up จดหมาย -->
+    <div class="popup" id="letterPopup">
+      <div class="popup-content glass">
+        <button id="popupClose" class="close-btn">×</button>
+        <span id="popupTimer" class="timer"></span>
+        <!-- 👇 เปลี่ยนตรงนี้เวลาอัพเดทไฟล์จดหมาย -->
+        <img id="letterImage" src="/assets/letter_v1_th.jpg" alt="Letter">
+        <div class="popup-actions">
+          <label><input type="checkbox" id="popupDontShow"> Do not show again</label>
+        </div>
       </div>
     </div>
   </div>
@@ -168,71 +289,91 @@
   import { GLTFLoader } from 'https://unpkg.com/three@0.164.0/examples/jsm/loaders/GLTFLoader.js';
 
   document.addEventListener('DOMContentLoaded', () => {
-    const mv=document.getElementById('mv'),page=document.getElementById('page-root');
+    const mv = document.getElementById('mv');
+    const page = document.getElementById('page-root');
 
-    mv.addEventListener('ar-status',(e)=>{
-      const status=e.detail?.status||'';
-      if(status.includes('session-started')||status.includes('presenting')||status.includes('in-ar')) page.classList.add('ar-active');
-      else page.classList.remove('ar-active');
+    mv.addEventListener('ar-status', (evt) => {
+      const status = evt.detail?.status || '';
+      if(status.includes('session-started') || status.includes('presenting') || status.includes('in-ar')){
+        page.classList.add('ar-active');
+      }else{
+        page.classList.remove('ar-active');
+      }
     });
 
-    // เล่นทุกอนิเมชัน
+    // เล่นทุกอนิเมชันพร้อมกัน
     async function tryPlayAllAnimations(){
       try{
-        const loader=new GLTFLoader();
-        const gltf=await new Promise((res,rej)=>loader.load('/assets/model1.glb',res,undefined,rej));
-        if(!gltf.animations||gltf.animations.length===0) return;
-        const internalModel=mv.scene; if(!internalModel) return;
-        const mixer=new THREE.AnimationMixer(internalModel);
-        gltf.animations.forEach((clip)=>{ const action=mixer.clipAction(clip); action.reset(); action.play(); action.setLoop(THREE.LoopRepeat,Infinity); });
-        let prev=performance.now();
-        function tick(){ const now=performance.now(); const delta=(now-prev)/1000; prev=now; mixer.update(delta); requestAnimationFrame(tick);}
+        const loader = new GLTFLoader();
+        const gltf = await new Promise((res,rej)=> loader.load('/assets/model1.glb', res, undefined, rej));
+        if(!gltf.animations || gltf.animations.length===0) return;
+        const internalModel = mv.scene;
+        if(!internalModel) return;
+        const mixer = new THREE.AnimationMixer(internalModel);
+        gltf.animations.forEach((clip)=>{
+          const action = mixer.clipAction(clip);
+          action.reset(); action.play(); action.setLoop(THREE.LoopRepeat, Infinity);
+        });
+        let prev = performance.now();
+        function tick(){
+          const now = performance.now();
+          const delta = (now-prev)/1000; prev=now;
+          mixer.update(delta);
+          requestAnimationFrame(tick);
+        }
         requestAnimationFrame(tick);
-      }catch(err){console.warn('Animation error',err)}
+      }catch(err){console.warn('Animation error', err)}
     }
-    mv.addEventListener('load',()=>{ tryPlayAllAnimations(); });
+    mv.addEventListener('load', ()=>{ tryPlayAllAnimations(); });
 
-    // Cursor ปลอม
-    const cursorEl=document.getElementById("touchCursor");
-    document.addEventListener("touchstart",(e)=>{const t=e.touches[0];cursorEl.style.left=t.clientX+"px";cursorEl.style.top=t.clientY+"px";cursorEl.style.display="block";});
-    document.addEventListener("touchmove",(e)=>{const t=e.touches[0];cursorEl.style.left=t.clientX+"px";cursorEl.style.top=t.clientY+"px";});
-    document.addEventListener("touchend",()=>{cursorEl.style.display="none";});
+    // Cursor ปลอมบนมือถือ
+    const cursorEl = document.getElementById("touchCursor");
+    document.addEventListener("touchstart", (e) => {
+      const touch = e.touches[0];
+      cursorEl.style.left = touch.clientX + "px";
+      cursorEl.style.top = touch.clientY + "px";
+      cursorEl.style.display = "block";
+    });
+    document.addEventListener("touchmove", (e) => {
+      const touch = e.touches[0];
+      cursorEl.style.left = touch.clientX + "px";
+      cursorEl.style.top = touch.clientY + "px";
+    });
+    document.addEventListener("touchend", () => {
+      cursorEl.style.display = "none";
+    });
 
-    // ===== Popup Letter =====
-    const popup=document.getElementById("letterPopup"),
-          closeBtn=document.getElementById("closePopup"),
-          dontShowBtn=document.getElementById("dontShowAgain"),
-          letterImage=document.getElementById("letterImage"),
-          langTH=document.getElementById("langTH"),
-          langEN=document.getElementById("langEN"),
-          countdownEl=document.getElementById("countdownTimer");
+    // ==== Pop-up Logic ====
+    const popup = document.getElementById("letterPopup");
+    const closeBtn = document.getElementById("popupClose");
+    const dontShow = document.getElementById("popupDontShow");
+    const timerEl = document.getElementById("popupTimer");
 
-    // ✅ จุดแก้เมื่อมีจดหมายใหม่
-    const letterVersion="v1"; // 🔥 เปลี่ยนเป็น v2, v3... ตามไฟล์ที่คุณอัพ
-    const isDev=true;         // 🔥 ระหว่าง dev = true, ใช้งานจริง = false
+    let countdown = 120; // 2 นาที
+    let interval;
 
-    letterImage.src=`/assets/letter_${letterVersion}_th.jpg`;
-
-    let timeLeft=120,timer;
-    function showPopup(){
-      popup.style.display="flex"; timeLeft=120;
-      countdownEl.textContent=`(Auto close in ${timeLeft}s)`;
-      timer=setInterval(()=>{timeLeft--; countdownEl.textContent=`(Auto close in ${timeLeft}s)`; if(timeLeft<=0){clearInterval(timer); popup.style.display="none";}},1000);
+    function startCountdown(){
+      timerEl.textContent = `${countdown}s`;
+      interval = setInterval(()=>{
+        countdown--;
+        timerEl.textContent = `${countdown}s`;
+        if(countdown<=0){
+          closePopup();
+        }
+      },1000);
     }
-    function hidePopup(){clearInterval(timer); popup.style.display="none";}
 
-    if(isDev){ showPopup(); }
-    else{
-      const storageKey=`hideLetter_${letterVersion}`;
-      if(localStorage.getItem(storageKey)!=="true"){ showPopup(); }
+    function closePopup(){
+      popup.style.display = "none";
+      clearInterval(interval);
     }
 
-    closeBtn.onclick=()=>hidePopup();
-    dontShowBtn.onclick=()=>{ hidePopup(); if(!isDev){ const storageKey=`hideLetter_${letterVersion}`; localStorage.setItem(storageKey,"true"); }};
-    langTH.onclick=()=>{ letterImage.src=`/assets/letter_${letterVersion}_th.jpg`; }
-    langEN.onclick=()=>{ letterImage.src=`/assets/letter_${letterVersion}_en.jpg`; }
+    // Dev mode: popup always show
+    popup.style.display = "flex";
+    startCountdown();
+
+    closeBtn.addEventListener("click", closePopup);
   });
   </script>
 </body>
 </html>
-
