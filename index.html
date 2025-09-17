@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>TESTZNN</title>
+  <title>Special of ZNN</title>
   <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
   <style>
     :root{
@@ -18,7 +18,7 @@
       font-family: Inter, Roboto, system-ui, -apple-system, "Segoe UI";
       color:#fff;
       background:linear-gradient(to bottom,var(--bg-top) 0%, var(--bg-top) 70%, var(--bg-bottom) 100%);
-      cursor: url("/assets/mouse.png"), auto; /* Desktop cursor */
+      cursor: url("/assets/mouse.png"), auto;
     }
 
     .page{
@@ -30,7 +30,6 @@
     }
     .page.ar-active{ background:transparent; }
 
-    /* กล่องโมเดล */
     .viewer-card{
       width:100%;
       max-width:900px;
@@ -46,10 +45,9 @@
       background:transparent;
       shadow-intensity:1;
       shadow-softness:0.9;
-      cursor: url("/assets/mouse.png"), auto !important; /* Cursor บนการ์ด */
+      cursor: url("/assets/mouse.png"), auto !important;
     }
 
-    /* ==== Liquid Glass (Apple-like + shimmer) ==== */
     .glass {
       position: relative;
       display: inline-flex;
@@ -57,68 +55,12 @@
       gap: .55em;
       padding: .5em 1.1em;
       border-radius: 16px;
-
-      background: linear-gradient(180deg,
-                  rgba(255,255,255,.22) 0%,
-                  rgba(255,255,255,.10) 60%,
-                  rgba(255,255,255,.06) 100%);
+      background: rgba(255,255,255,.15);
       border: 1px solid rgba(255,255,255,.28);
       backdrop-filter: blur(14px) saturate(120%);
       -webkit-backdrop-filter: blur(14px) saturate(120%);
-
-      box-shadow:
-        0 8px 24px rgba(0,0,0,.35),
-        inset 0 1px 0 rgba(255,255,255,.28),
-        inset 0 -1px 0 rgba(255,255,255,.08);
-
+      box-shadow: 0 8px 24px rgba(0,0,0,.35);
       overflow: hidden;
-    }
-
-    .glass::before{
-      content:"";
-      position:absolute; inset:0;
-      border-radius: inherit;
-      pointer-events:none;
-      background:
-        linear-gradient( to bottom,
-          rgba(255,255,255,.35),
-          rgba(255,255,255,0) 55%) top/100% 40% no-repeat,
-        radial-gradient(120% 100% at 0% 0%,
-          rgba(255,255,255,.35), rgba(255,255,255,0) 60%) left/55% 100% no-repeat,
-        radial-gradient(120% 100% at 100% 0%,
-          rgba(255,255,255,.35), rgba(255,255,255,0) 60%) right/55% 100% no-repeat;
-      mix-blend-mode: screen;
-      opacity:.65;
-    }
-
-    .glass::after{
-      content:"";
-      position:absolute; inset:0;
-      border-radius: inherit;
-      background: linear-gradient(120deg,
-        transparent 0%,
-        rgba(255,255,255,.7) 45%,
-        rgba(255,255,255,.9) 50%,
-        rgba(255,255,255,.7) 55%,
-        transparent 100%);
-      transform: translateX(-100%);
-      animation: shimmer 3.5s infinite;
-    }
-
-    @keyframes shimmer {
-      0% { transform: translateX(-100%); }
-      50% { transform: translateX(100%); }
-      100% { transform: translateX(100%); }
-    }
-
-    .glass > .noise {
-      position:absolute; inset:0; pointer-events:none; border-radius:inherit;
-      opacity:.08; mix-blend-mode:soft-light;
-      background-image: url("data:image/svg+xml;utf8,\
-      <svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'>\
-        <filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/></filter>\
-        <rect width='100' height='100' filter='url(%23n)' opacity='0.6'/>\
-      </svg>");
     }
 
     .glass .label{
@@ -133,15 +75,6 @@
       object-fit: contain;
     }
 
-    @media (prefers-reduced-transparency: reduce){
-      .glass{
-        background: rgba(255,255,255,.12);
-        backdrop-filter: none; -webkit-backdrop-filter: none;
-      }
-      .glass::before,.glass::after,.glass>.noise{ display:none; }
-    }
-
-    /* Egg Day อยู่ใต้การ์ด (เว้นห่าง 3vh) */
     .egg-day-wrap{
       margin-top: 3vh;
       display:flex;
@@ -149,7 +82,6 @@
       width:100%;
     }
 
-    /* โลโก้ซ้าย-ขวาล่าง */
     .logo-left,
     .logo-right{
       position:fixed;
@@ -164,7 +96,6 @@
       object-fit:contain;
     }
 
-    /* Cursor ปลอมบนมือถือ */
     .touch-cursor {
       position: fixed;
       width: 40px;
@@ -177,57 +108,69 @@
     }
 
     /* ==== Pop-up จดหมาย ==== */
-    .popup {
+    .popup-overlay {
       position: fixed;
       inset: 0;
+      background: rgba(0,0,0,0.65);
       display: flex;
       align-items: center;
       justify-content: center;
-      background: rgba(0,0,0,0.65);
       z-index: 10000;
     }
-    .popup-content {
+    .popup {
       position: relative;
-      padding: 1em;
-      border-radius: 16px;
-      text-align: center;
+      max-height: 60vh;
       max-width: 90vw;
-    }
-    .popup-content img {
-      max-height: 60vh;  /* สูงสุด 60% ของจอ */
-      width: auto;
-      height: auto;
-      display: block;
-      margin: 0 auto;
       border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 10px;
+      background: rgba(0,0,0,0.4);
+      backdrop-filter: blur(12px);
     }
-    .close-btn {
-      position: absolute;
-      top: .4em;
-      right: .6em;
-      background: rgba(0,0,0,0.5);
+    .popup img {
+      max-height: 60vh;
+      max-width: 85vw;
+      object-fit: contain;
+      border-radius: 8px;
+    }
+    .popup-header {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .popup-header button {
+      background: rgba(255,255,255,0.8);
       border: none;
-      color: #fff;
-      font-size: 20px;
+      border-radius: 6px;
+      padding: 4px 10px;
       cursor: pointer;
+      font-weight: 600;
+    }
+    .popup-close {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: rgba(255,255,255,0.8);
+      border: none;
       border-radius: 50%;
       width: 28px;
       height: 28px;
-      line-height: 24px;
+      cursor: pointer;
+      font-weight: bold;
     }
-    .timer {
-      position: absolute;
-      top: .4em;
-      left: .6em;
+    .popup-footer {
+      margin-top: 6px;
+      text-align: center;
       font-size: 14px;
-      color: #fff;
-      background: rgba(0,0,0,0.5);
-      padding: 2px 6px;
-      border-radius: 6px;
     }
-    .popup-actions {
-      margin-top: .6em;
-      font-size: 14px;
+    .popup-footer label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
     }
   </style>
 </head>
@@ -255,11 +198,10 @@
       <div class="glass">
         <img class="evo" src="/assets/imageevo01.png" alt="Evolution">
         <span class="label">EGG DAY : 02</span>
-        <span class="noise"></span>
       </div>
     </div>
 
-    <!-- โลโก้ -->
+    <!-- โลโก้ซ้าย/ขวาล่าง -->
     <div class="logo-left">
       <img src="/assets/logoimage1.png" alt="Logo Left">
     </div>
@@ -269,17 +211,20 @@
 
     <!-- Cursor ปลอมบนมือถือ -->
     <div class="touch-cursor" id="touchCursor"></div>
+  </div>
 
-    <!-- Pop-up จดหมาย -->
-    <div class="popup" id="letterPopup">
-      <div class="popup-content glass">
-        <button id="popupClose" class="close-btn">×</button>
-        <span id="popupTimer" class="timer"></span>
-        <!-- 👇 เปลี่ยนตรงนี้เวลาอัพเดทไฟล์จดหมาย -->
-        <img id="letterImage" src="/assets/letter_v1_th.jpg" alt="Letter">
-        <div class="popup-actions">
-          <label><input type="checkbox" id="popupDontShow"> Do not show again</label>
-        </div>
+  <!-- Pop-up Letter -->
+  <div class="popup-overlay" id="letterPopup" style="display:none;">
+    <div class="popup">
+      <button class="popup-close" id="popupClose">×</button>
+      <div class="popup-header">
+        <button id="btnTH">TH</button>
+        <button id="btnEN">EN</button>
+      </div>
+      <img id="letterImage" src="/assets/letter_v1_th.jpg" alt="Letter">
+      <div class="popup-footer">
+        <label><input type="checkbox" id="doNotShow"> Do not show again</label>
+        <div id="countdown">Auto close in 120s</div>
       </div>
     </div>
   </div>
@@ -292,6 +237,7 @@
     const mv = document.getElementById('mv');
     const page = document.getElementById('page-root');
 
+    // --- AR background toggle ---
     mv.addEventListener('ar-status', (evt) => {
       const status = evt.detail?.status || '';
       if(status.includes('session-started') || status.includes('presenting') || status.includes('in-ar')){
@@ -301,7 +247,7 @@
       }
     });
 
-    // เล่นทุกอนิเมชันพร้อมกัน
+    // --- Animation loader ---
     async function tryPlayAllAnimations(){
       try{
         const loader = new GLTFLoader();
@@ -326,7 +272,7 @@
     }
     mv.addEventListener('load', ()=>{ tryPlayAllAnimations(); });
 
-    // Cursor ปลอมบนมือถือ
+    // --- Cursor ปลอมบนมือถือ ---
     const cursorEl = document.getElementById("touchCursor");
     document.addEventListener("touchstart", (e) => {
       const touch = e.touches[0];
@@ -343,21 +289,28 @@
       cursorEl.style.display = "none";
     });
 
-    // ==== Pop-up Logic ====
+    // --- Pop-up จดหมาย ---
+    const version = "v1"; // <<< ตรงนี้คือจุดที่คุณแก้เลขเวอร์ชัน (เปลี่ยน v1 → v2 → v3 …)
     const popup = document.getElementById("letterPopup");
     const closeBtn = document.getElementById("popupClose");
-    const dontShow = document.getElementById("popupDontShow");
-    const timerEl = document.getElementById("popupTimer");
+    const doNotShow = document.getElementById("doNotShow");
+    const letterImg = document.getElementById("letterImage");
+    const btnTH = document.getElementById("btnTH");
+    const btnEN = document.getElementById("btnEN");
+    const countdownEl = document.getElementById("countdown");
 
-    let countdown = 120; // 2 นาที
-    let interval;
+    let countdown = 120;
+    let countdownTimer;
 
-    function startCountdown(){
-      timerEl.textContent = `${countdown}s`;
-      interval = setInterval(()=>{
+    function showPopup(){
+      if(localStorage.getItem("hideLetter_"+version)) return;
+      popup.style.display = "flex";
+      countdown = 120;
+      countdownEl.textContent = "Auto close in " + countdown + "s";
+      countdownTimer = setInterval(()=>{
         countdown--;
-        timerEl.textContent = `${countdown}s`;
-        if(countdown<=0){
+        countdownEl.textContent = "Auto close in " + countdown + "s";
+        if(countdown <= 0){
           closePopup();
         }
       },1000);
@@ -365,14 +318,17 @@
 
     function closePopup(){
       popup.style.display = "none";
-      clearInterval(interval);
+      clearInterval(countdownTimer);
+      if(doNotShow.checked){
+        localStorage.setItem("hideLetter_"+version,true);
+      }
     }
 
-    // Dev mode: popup always show
-    popup.style.display = "flex";
-    startCountdown();
-
     closeBtn.addEventListener("click", closePopup);
+    btnTH.addEventListener("click", ()=>{ letterImg.src = "/assets/letter_"+version+"_th.jpg"; });
+    btnEN.addEventListener("click", ()=>{ letterImg.src = "/assets/letter_"+version+"_en.jpg"; });
+
+    showPopup();
   });
   </script>
 </body>
