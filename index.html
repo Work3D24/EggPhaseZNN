@@ -4,115 +4,77 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <title>Special of ZNN</title>
-  <script src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
   <style>
     :root{
-      --bg-top:#212121;
-      --bg-bottom:#f48fb1;
+      --bg-top:#212121; --bg-bottom:#f48fb1;
       --card-shadow:0 10px 30px rgba(0,0,0,0.45);
     }
+    html,body{height:100%;margin:0;font-family:Inter,Roboto,system-ui;
+      background:linear-gradient(to bottom,var(--bg-top) 0%,var(--bg-top) 70%,var(--bg-bottom) 100%);
+      color:#fff;cursor:url("/assets/mouse.png"),auto;}
+    .page{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;}
+    .page.ar-active{background:transparent;}
 
-    html,body{
-      height:100%; margin:0;
-      font-family:Inter,Roboto,system-ui;
-      background:linear-gradient(to bottom,var(--bg-top) 0%, var(--bg-top) 70%, var(--bg-bottom) 100%);
-      color:#fff;
-      cursor:url("/assets/mouse.png"),auto;
-    }
+    /* กล่องโมเดล */
+    .viewer-card{width:100%;max-width:900px;height:65vh;background:transparent;
+      border-radius:20px;box-shadow:var(--card-shadow);overflow:hidden;}
+    model-viewer{width:100%;height:100%;background:transparent;
+      shadow-intensity:1;shadow-softness:0.9;cursor:url("/assets/mouse.png"),auto!important;}
 
-    .page{
-      display:flex; flex-direction:column;
-      align-items:center; justify-content:center;
-      height:100%;
-    }
-    .viewer-card{
-      width:100%; max-width:900px; height:65vh;
-      border-radius:20px; overflow:hidden;
-      box-shadow:var(--card-shadow);
-    }
-    model-viewer{
-      width:100%; height:100%;
-      background:transparent;
-      shadow-intensity:1; shadow-softness:.9;
-    }
+    /* Liquid glass Egg Day */
+    .glass{position:relative;display:inline-flex;align-items:center;gap:.55em;
+      padding:.5em 1.1em;border-radius:16px;
+      background:linear-gradient(180deg,rgba(255,255,255,.22) 0%,rgba(255,255,255,.10) 60%,rgba(255,255,255,.06) 100%);
+      border:1px solid rgba(255,255,255,.28);backdrop-filter:blur(14px) saturate(120%);
+      -webkit-backdrop-filter:blur(14px) saturate(120%);
+      box-shadow:0 8px 24px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.28),inset 0 -1px 0 rgba(255,255,255,.08);}
+    .glass .label{font-weight:700;font-size:clamp(14px,2vw,20px);}
+    .glass .evo{height:1.2em;width:auto;object-fit:contain;}
+    .egg-day-wrap{margin-top:3vh;display:flex;justify-content:center;width:100%;}
 
-    .egg-day-wrap{ margin-top:3vh; display:flex; justify-content:center; width:100%; }
-    .glass{
-      padding:.5em 1em; border-radius:16px;
-      background:rgba(255,255,255,.15);
-      backdrop-filter:blur(14px) saturate(120%);
-      display:flex; gap:.5em; align-items:center;
-      box-shadow:0 4px 20px rgba(0,0,0,.3);
-    }
-    .glass .evo{ height:1.2em; }
-    .glass .label{ font-weight:700; }
+    .logo-left,.logo-right{position:fixed;bottom:1vh;}
+    .logo-left{left:1vw;} .logo-right{right:1vw;}
+    .logo-left img,.logo-right img{height:3vh;width:auto;object-fit:contain;}
 
-    .logo-left,.logo-right{ position:fixed; bottom:1vh; }
-    .logo-left{ left:1vw; } .logo-right{ right:1vw; }
-    .logo-left img,.logo-right img{ height:3vh; }
-
-    .touch-cursor{ position:fixed; width:40px; height:40px;
-      background:url("/assets/mouse.png") no-repeat center/contain;
-      pointer-events:none; transform:translate(-50%,-50%);
-      z-index:9999; display:none; }
+    .touch-cursor{position:fixed;width:40px;height:40px;background:url("/assets/mouse.png") no-repeat center/contain;
+      pointer-events:none;transform:translate(-50%,-50%);z-index:9999;display:none;}
 
     /* Popup */
-    .popup-overlay{
-      position:fixed; inset:0;
-      background:rgba(0,0,0,.6);
-      display:flex; justify-content:center; align-items:center;
-      z-index:10000;
-    }
-    .popup-card{
-      position:relative;
-      max-width:90vw; max-height:80vh;
-      padding:1em; border-radius:20px;
-      background:rgba(255,255,255,.2);
-      backdrop-filter:blur(18px) saturate(150%);
+    .popup-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);
+      display:flex;justify-content:center;align-items:center;z-index:10000;}
+    .popup-card{position:relative;max-width:90vw;max-height:80vh;
+      padding:1em;border-radius:20px;
+      background:rgba(255,255,255,.2);backdrop-filter:blur(18px) saturate(150%);
       -webkit-backdrop-filter:blur(18px) saturate(150%);
       box-shadow:0 8px 32px rgba(0,0,0,.45);
-      display:flex; flex-direction:column; align-items:center;
-    }
-    .popup-card img{
-      max-height:60vh; max-width:85vw; object-fit:contain;
-      border-radius:12px;
-    }
-    .close-btn{
-      position:absolute; top:.5em; right:.5em;
-      background:rgba(255,255,255,.7);
-      border:none; border-radius:50%;
-      width:32px; height:32px;
-      font-size:18px; cursor:pointer;
-      display:flex; align-items:center; justify-content:center;
-      box-shadow:0 2px 6px rgba(0,0,0,.3);
-    }
-    .lang-buttons{ margin:.5em 0; }
-    .lang-buttons button{
-      margin:0 .3em; padding:.3em .8em;
-      border:none; border-radius:8px;
-      cursor:pointer; font-weight:600;
-      background:rgba(255,255,255,.8);
-      color:#333;
-      box-shadow:0 2px 6px rgba(0,0,0,.2);
-    }
-    .lang-buttons button:hover{
-      background:rgba(255,255,255,1);
-    }
-    .popup-controls{
-      margin-top:.5em; font-size:14px;
-      color:#fff; text-align:center;
-    }
-    .countdown{ margin-top:.25em; font-size:13px; color:#fff; }
+      display:flex;flex-direction:column;align-items:center;}
+    .popup-card img{max-height:60vh;max-width:85vw;object-fit:contain;border-radius:12px;}
+    .close-btn{position:absolute;top:.5em;right:.5em;
+      background:rgba(255,255,255,.7);border:none;border-radius:50%;
+      width:32px;height:32px;font-size:18px;cursor:pointer;
+      display:flex;align-items:center;justify-content:center;
+      box-shadow:0 2px 6px rgba(0,0,0,.3);}
+    .lang-buttons{margin:.5em 0;}
+    .lang-buttons button{margin:0 .3em;padding:.3em .8em;
+      border:none;border-radius:8px;cursor:pointer;font-weight:600;
+      background:rgba(255,255,255,.8);color:#333;
+      box-shadow:0 2px 6px rgba(0,0,0,.2);}
+    .lang-buttons button:hover{background:#fff;}
+    .popup-controls{margin-top:.5em;font-size:14px;color:#fff;text-align:center;}
+    .countdown{margin-top:.25em;font-size:13px;color:#fff;}
   </style>
 </head>
 <body>
-  <div class="page">
+  <div class="page" id="page-root">
+    <!-- โมเดล -->
     <div class="viewer-card">
       <model-viewer id="mv"
         src="/assets/model.glb"
         ios-src="/assets/model.usdz"
         alt="Special of ZNN"
         ar ar-modes="webxr scene-viewer quick-look"
+        environment-image="neutral"
         camera-controls autoplay
         exposure="1"
         shadow-intensity="1"
@@ -120,16 +82,17 @@
       </model-viewer>
     </div>
 
+    <!-- Egg Day -->
     <div class="egg-day-wrap">
       <div class="glass">
-        <img class="evo" src="/assets/imageevo01.png">
+        <img class="evo" src="/assets/imageevo01.png" alt="Evolution">
         <span class="label">EGG DAY : 02</span>
       </div>
     </div>
 
+    <!-- โลโก้ -->
     <div class="logo-left"><img src="/assets/logoimage1.png"></div>
     <div class="logo-right"><img src="/assets/logoimage2.png"></div>
-
     <div class="touch-cursor" id="touchCursor"></div>
   </div>
 
@@ -149,31 +112,26 @@
     </div>
   </div>
 
-  <script>
-    // === CONFIG ===
-    const DEV_MODE = true; // true = Dev, false = จริง
-    const LETTER_VERSION = "v1"; // แก้เลขเวอร์ชันเวลามีจดหมายใหม่
+  <script type="module">
+    import * as THREE from 'https://unpkg.com/three@0.164.0/build/three.module.js';
+    import { GLTFLoader } from 'https://unpkg.com/three@0.164.0/examples/jsm/loaders/GLTFLoader.js';
 
-    // === Popup Logic ===
-    const overlay = document.getElementById("popupOverlay");
-    const closeBtn = document.getElementById("popupClose");
-    const popupImg = document.getElementById("popupImg");
-    const doNotShow = document.getElementById("doNotShow");
-    const countdownEl = document.getElementById("countdown");
-    const btnTh = document.getElementById("btn-th");
-    const btnEn = document.getElementById("btn-en");
-    const key = "popupDismissed_" + LETTER_VERSION;
+    // ==== CONFIG ====
+    const DEV_MODE = true;  // true = dev mode
+    const LETTER_VERSION = "v1"; // แก้เลขนี้เวลาเปลี่ยนเวอร์ชัน
 
-    function showPopup(){
-      overlay.style.display="flex";
-      startCountdown();
-    }
-    function hidePopup(){
-      overlay.style.display="none";
-      stopCountdown();
-    }
+    // Popup refs
+    const overlay=document.getElementById("popupOverlay");
+    const closeBtn=document.getElementById("popupClose");
+    const popupImg=document.getElementById("popupImg");
+    const doNotShow=document.getElementById("doNotShow");
+    const countdownEl=document.getElementById("countdown");
+    const btnTh=document.getElementById("btn-th");
+    const btnEn=document.getElementById("btn-en");
+    const key="popupDismissed_"+LETTER_VERSION;
 
-    // Countdown
+    function showPopup(){overlay.style.display="flex";startCountdown();}
+    function hidePopup(){overlay.style.display="none";stopCountdown();}
     let timer,timeLeft=120;
     function startCountdown(){
       timeLeft=120;
@@ -181,39 +139,68 @@
       timer=setInterval(()=>{
         timeLeft--;
         countdownEl.textContent="Auto close in "+timeLeft+"s";
-        if(timeLeft<=0){ hidePopup(); clearInterval(timer); }
+        if(timeLeft<=0){hidePopup();clearInterval(timer);}
       },1000);
     }
-    function stopCountdown(){ clearInterval(timer); }
+    function stopCountdown(){clearInterval(timer);}
 
-    closeBtn.addEventListener("click", ()=>hidePopup());
+    closeBtn.addEventListener("click", hidePopup);
     doNotShow.addEventListener("change",(e)=>{
-      if(e.target.checked){ localStorage.setItem(key,"true"); }
-      else{ localStorage.removeItem(key); }
+      if(e.target.checked){localStorage.setItem(key,"true");}
+      else{localStorage.removeItem(key);}
     });
-    btnTh.addEventListener("click", ()=> popupImg.src=`/assets/letter_${LETTER_VERSION}_th.jpg`);
-    btnEn.addEventListener("click", ()=> popupImg.src=`/assets/letter_${LETTER_VERSION}_en.jpg`);
+    btnTh.addEventListener("click",()=>popupImg.src=`/assets/letter_${LETTER_VERSION}_th.jpg`);
+    btnEn.addEventListener("click",()=>popupImg.src=`/assets/letter_${LETTER_VERSION}_en.jpg`);
 
-    window.addEventListener("load", ()=>{
-      if(DEV_MODE){ showPopup(); }
-      else if(!localStorage.getItem(key)){ showPopup(); }
+    window.addEventListener("load",()=>{
+      if(DEV_MODE){showPopup();}
+      else if(!localStorage.getItem(key)){showPopup();}
     });
 
-    // Cursor มือถือ
+    // Cursor มือถือ + mouse click
     const cursorEl=document.getElementById("touchCursor");
     document.addEventListener("touchstart",(e)=>{
-      const t=e.touches[0];
-      cursorEl.style.left=t.clientX+"px";
-      cursorEl.style.top=t.clientY+"px";
-      cursorEl.style.display="block";
+      const t=e.touches[0];cursorEl.style.left=t.clientX+"px";cursorEl.style.top=t.clientY+"px";cursorEl.style.display="block";
     });
     document.addEventListener("touchmove",(e)=>{
-      const t=e.touches[0];
-      cursorEl.style.left=t.clientX+"px";
-      cursorEl.style.top=t.clientY+"px";
+      const t=e.touches[0];cursorEl.style.left=t.clientX+"px";cursorEl.style.top=t.clientY+"px";
     });
     document.addEventListener("touchend",()=>cursorEl.style.display="none");
+    document.addEventListener("click",()=>{cursorEl.style.display="none";}); // เพิ่มให้ mouse ใช้งานได้
+
+    // ==== ระบบโมเดล ====
+    const mv=document.getElementById('mv');
+    const page=document.getElementById('page-root');
+    mv.addEventListener('ar-status',(evt)=>{
+      const status=evt.detail?.status||'';
+      if(status.includes('session-started')||status.includes('presenting')||status.includes('in-ar')){
+        page.classList.add('ar-active');
+      }else{page.classList.remove('ar-active');}
+    });
+
+    async function tryPlayAllAnimations(){
+      try{
+        const loader=new GLTFLoader();
+        const gltf=await new Promise((res,rej)=>loader.load('/assets/model.glb',res,undefined,rej));
+        if(!gltf.animations||gltf.animations.length===0) return;
+        const internalModel=mv.scene;
+        if(!internalModel) return;
+        const mixer=new THREE.AnimationMixer(internalModel);
+        gltf.animations.forEach((clip)=>{
+          const action=mixer.clipAction(clip);
+          action.reset();action.play();action.setLoop(THREE.LoopRepeat,Infinity);
+        });
+        let prev=performance.now();
+        function tick(){
+          const now=performance.now();
+          const delta=(now-prev)/1000;prev=now;
+          mixer.update(delta);
+          requestAnimationFrame(tick);
+        }
+        requestAnimationFrame(tick);
+      }catch(err){console.warn('Animation error',err)}
+    }
+    mv.addEventListener('load',()=>{tryPlayAllAnimations();});
   </script>
 </body>
 </html>
-
