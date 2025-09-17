@@ -11,105 +11,102 @@
       --bg-bottom: #f48fb1;
       --card-shadow: 0 10px 30px rgba(0,0,0,0.45);
     }
+
     html,body{
-      height:100%; margin:0;
+      height:100%;
+      margin:0;
       font-family: Inter, Roboto, system-ui, -apple-system, "Segoe UI";
       color:#fff;
       background:linear-gradient(to bottom,var(--bg-top) 0%, var(--bg-top) 70%, var(--bg-bottom) 100%);
       cursor: url("/assets/mouse.png"), auto;
     }
+
     .page{ display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; }
     .page.ar-active{ background:transparent; }
 
     /* กล่องโมเดล */
     .viewer-card{
-      width:100%; max-width:900px; height:65vh;
-      background:transparent; border-radius:20px;
-      box-shadow: var(--card-shadow); overflow:hidden;
+      width:100%;
+      max-width:900px;
+      height:65vh;
+      background:transparent;
+      border-radius:20px;
+      box-shadow: var(--card-shadow);
+      overflow:hidden;
     }
     model-viewer{
-      width:100%; height:100%; background:transparent;
+      width:100%; height:100%;
+      background:transparent;
       shadow-intensity:1; shadow-softness:0.9;
       cursor: url("/assets/mouse.png"), auto !important;
     }
 
     /* Egg Day */
-    .egg-day-wrap{
-      margin-top:3vh; display:flex; justify-content:center; width:100%;
-    }
-    .glass{
-      position:relative; display:inline-flex; align-items:center; gap:.55em;
-      padding:.5em 1.1em; border-radius:16px;
-      background:rgba(255,255,255,.12); backdrop-filter:blur(14px) saturate(120%);
-      -webkit-backdrop-filter:blur(14px) saturate(120%);
-      box-shadow:0 8px 24px rgba(0,0,0,.35);
-    }
-    .glass .label{ font-weight:700; font-size: clamp(14px, 2vw, 20px); color:#fff; }
-    .glass .evo{ height:1.2em; width:auto; object-fit:contain; }
+    .egg-day-wrap{ margin-top:3vh; display:flex; justify-content:center; width:100%; }
+    .glass{ position:relative; display:inline-flex; align-items:center; gap:.55em; padding:.5em 1.1em;
+      border-radius:16px; background:rgba(255,255,255,.15); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+      border:1px solid rgba(255,255,255,.25); }
+    .glass .label{ font-weight:700; font-size:clamp(14px,2vw,20px); }
+    .glass .evo{ height:1.2em; }
 
     /* โลโก้ */
-    .logo-left, .logo-right{ position:fixed; bottom:1vh; }
+    .logo-left,.logo-right{ position:fixed; bottom:1vh; }
     .logo-left{ left:1vw; } .logo-right{ right:1vw; }
-    .logo-left img, .logo-right img{ height:3vh; width:auto; object-fit:contain; }
+    .logo-left img,.logo-right img{ height:3vh; object-fit:contain; }
 
-    /* Cursor ปลอมมือถือ */
+    /* Cursor มือถือ */
     .touch-cursor{ position:fixed; width:40px; height:40px;
       background:url("/assets/mouse.png") no-repeat center/contain;
       pointer-events:none; transform:translate(-50%,-50%);
-      z-index:9999; display:none;
-    }
+      z-index:9999; display:none; }
 
-    /* ==== POPUP ==== */
+    /* ==== Popup ==== */
     .popup-overlay{
-      position:fixed; inset:0; background:rgba(0,0,0,0.7);
-      display:flex; align-items:center; justify-content:center;
-      z-index:2000;
+      position:fixed; inset:0;
+      background:rgba(0,0,0,0.65);
+      display:none; justify-content:center; align-items:center;
+      z-index:10000;
     }
     .popup-box{
-      background:rgba(255,255,255,0.15);
-      backdrop-filter:blur(18px) saturate(120%);
-      border-radius:20px; padding:20px;
-      box-shadow:0 8px 32px rgba(0,0,0,0.45);
-      max-width:90%; max-height:90%;
+      background:rgba(30,30,30,0.85);
+      backdrop-filter:blur(14px);
+      border-radius:16px;
+      padding:12px;
+      max-width:90vw; max-height:90vh;
       display:flex; flex-direction:column; align-items:center;
-      position:relative;
+      box-shadow:0 8px 24px rgba(0,0,0,.5);
     }
-    .popup-box img{
-      max-height:60vh; width:auto; border-radius:12px;
+    .popup-header{ display:flex; gap:10px; margin-bottom:8px; }
+    .popup-header button{
+      padding:6px 12px; border:none; border-radius:8px;
+      background:rgba(255,255,255,0.15); color:#fff; font-weight:600; cursor:pointer;
     }
-    .popup-header{
-      position:absolute; top:8px; left:50%; transform:translateX(-50%);
-      display:flex; gap:8px;
+    .popup-header button:hover{ background:rgba(255,255,255,0.3); }
+    .popup-image{ max-height:60vh; width:auto; border-radius:12px; }
+    .popup-footer{ margin-top:10px; display:flex; flex-direction:column; gap:6px; align-items:center; }
+    .popup-footer button{
+      padding:6px 14px; border:none; border-radius:8px;
+      background:rgba(255,255,255,0.2); color:#fff; cursor:pointer;
     }
-    .lang-btn{
-      border:none; padding:6px 12px; border-radius:8px;
-      font-weight:bold; cursor:pointer;
-      background:rgba(255,255,255,0.7);
-    }
-    .lang-btn.active{ background:#f48fb1; color:#fff; }
-    .close-btn{
-      position:absolute; top:10px; right:10px;
-      background:#000; color:#fff; border:none; border-radius:50%;
-      width:30px; height:30px; cursor:pointer;
-    }
-    .popup-footer{
-      margin-top:10px; text-align:center; font-size:14px; color:#fff;
-    }
-    .popup-footer label{ display:flex; align-items:center; gap:6px; cursor:pointer; }
+    .popup-footer label{ font-size:14px; }
+    .popup-footer span{ font-size:12px; color:#ccc; }
   </style>
 </head>
 <body>
   <div class="page" id="page-root">
-    <!-- โมเดล -->
+    <!-- กล่องโมเดล -->
     <div class="viewer-card">
       <model-viewer id="mv"
         src="/assets/model.glb"
         ios-src="/assets/model.usdz"
         alt="Special of ZNN"
-        ar ar-modes="webxr scene-viewer quick-look"
+        ar
+        ar-modes="webxr scene-viewer quick-look"
         environment-image="neutral"
         camera-controls autoplay
-        exposure="1" shadow-intensity="1" shadow-softness="0.9"
+        exposure="1"
+        shadow-intensity="1"
+        shadow-softness="0.9"
       ></model-viewer>
     </div>
 
@@ -122,24 +119,25 @@
     </div>
 
     <!-- โลโก้ -->
-    <div class="logo-left"><img src="/assets/logoimage1.png"></div>
-    <div class="logo-right"><img src="/assets/logoimage2.png"></div>
+    <div class="logo-left"><img src="/assets/logoimage1.png" alt="Logo Left"></div>
+    <div class="logo-right"><img src="/assets/logoimage2.png" alt="Logo Right"></div>
 
+    <!-- Cursor มือถือ -->
     <div class="touch-cursor" id="touchCursor"></div>
   </div>
 
-  <!-- POPUP -->
-  <div class="popup-overlay" id="popupOverlay" style="display:none;">
+  <!-- Popup -->
+  <div class="popup-overlay" id="popupOverlay">
     <div class="popup-box">
       <div class="popup-header">
-        <button class="lang-btn active" id="btnTH">TH</button>
-        <button class="lang-btn" id="btnEN">EN</button>
+        <button id="btnTH">TH</button>
+        <button id="btnEN">EN</button>
+        <button id="popupClose">✕</button>
       </div>
-      <button class="close-btn" id="btnClose">&times;</button>
-      <img id="letterImg" src="/assets/letter_v1_th.jpg" alt="Letter">
+      <img id="letterImg" class="popup-image" src="" alt="Letter">
       <div class="popup-footer">
-        <label><input type="checkbox" id="noShow"> Do not show again</label>
-        <div id="countdown">Auto close in 120s</div>
+        <label><input type="checkbox" id="dontShowChk"> Do not show again</label>
+        <span id="countdown">Auto close in 120s</span>
       </div>
     </div>
   </div>
@@ -148,87 +146,74 @@
     import * as THREE from 'https://unpkg.com/three@0.164.0/build/three.module.js';
     import { GLTFLoader } from 'https://unpkg.com/three@0.164.0/examples/jsm/loaders/GLTFLoader.js';
 
-    const DEV_MODE = true; // 👉 เปลี่ยนเป็น false ตอนใช้งานจริง
-    const POPUP_VERSION = "v1";
-
     document.addEventListener('DOMContentLoaded', () => {
-      const mv = document.getElementById('mv');
-      const page = document.getElementById('page-root');
+      const mv=document.getElementById('mv'); const page=document.getElementById('page-root');
 
-      // ✅ AR status
-      mv.addEventListener('ar-status', (evt) => {
-        const status = evt.detail?.status || '';
-        if(status.includes('session-started') || status.includes('presenting') || status.includes('in-ar')){
+      // AR background toggle
+      mv.addEventListener('ar-status',(evt)=>{
+        const status=evt.detail?.status||'';
+        if(status.includes('session-started')||status.includes('presenting')||status.includes('in-ar')){
           page.classList.add('ar-active');
-        } else {
-          page.classList.remove('ar-active');
-        }
+        }else{ page.classList.remove('ar-active'); }
       });
 
-      // ✅ Play all animations
+      // Animations
       async function tryPlayAllAnimations(){
         try{
-          const loader = new GLTFLoader();
-          const gltf = await new Promise((res,rej)=> loader.load('/assets/model.glb', res, undefined, rej));
-          if(!gltf.animations || gltf.animations.length===0) return;
-          const internalModel = mv.scene;
-          if(!internalModel) return;
-          const mixer = new THREE.AnimationMixer(internalModel);
-          gltf.animations.forEach((clip)=>{
-            const action = mixer.clipAction(clip);
-            action.reset(); action.play(); action.setLoop(THREE.LoopRepeat, Infinity);
-          });
-          let prev = performance.now();
-          function tick(){
-            const now = performance.now(); const delta=(now-prev)/1000; prev=now;
-            mixer.update(delta); requestAnimationFrame(tick);
-          }
+          const loader=new GLTFLoader();
+          const gltf=await new Promise((res,rej)=>loader.load('/assets/model.glb',res,undefined,rej));
+          if(!gltf.animations||gltf.animations.length===0) return;
+          const internalModel=mv.scene; if(!internalModel) return;
+          const mixer=new THREE.AnimationMixer(internalModel);
+          gltf.animations.forEach((clip)=>{ const action=mixer.clipAction(clip); action.reset(); action.play(); action.setLoop(THREE.LoopRepeat,Infinity); });
+          let prev=performance.now();
+          function tick(){ const now=performance.now(); const delta=(now-prev)/1000; prev=now; mixer.update(delta); requestAnimationFrame(tick); }
           requestAnimationFrame(tick);
-        }catch(err){console.warn('Animation error', err)}
+        }catch(err){console.warn('Animation error',err);}
       }
-      mv.addEventListener('load', ()=>{ tryPlayAllAnimations(); });
+      mv.addEventListener('load',()=>{ tryPlayAllAnimations(); });
 
-      // ✅ Touch cursor
+      // Cursor มือถือ
       const cursorEl=document.getElementById("touchCursor");
       document.addEventListener("touchstart",(e)=>{const t=e.touches[0];cursorEl.style.left=t.clientX+"px";cursorEl.style.top=t.clientY+"px";cursorEl.style.display="block";});
       document.addEventListener("touchmove",(e)=>{const t=e.touches[0];cursorEl.style.left=t.clientX+"px";cursorEl.style.top=t.clientY+"px";});
       document.addEventListener("touchend",()=>{cursorEl.style.display="none";});
 
-      // ✅ Popup logic
+      // ==== POPUP ====
+      const DEV_MODE=true;
+      const LETTER_VERSION="v1";
+
       const overlay=document.getElementById("popupOverlay");
-      const btnClose=document.getElementById("btnClose");
+      const closeBtn=document.getElementById("popupClose");
+      const dontShowChk=document.getElementById("dontShowChk");
+      const letterImg=document.getElementById("letterImg");
       const btnTH=document.getElementById("btnTH");
       const btnEN=document.getElementById("btnEN");
-      const img=document.getElementById("letterImg");
-      const noShow=document.getElementById("noShow");
       const countdownEl=document.getElementById("countdown");
-      let countdownTimer;
 
       function showPopup(){
         overlay.style.display="flex";
+        letterImg.src=`/assets/letter_${LETTER_VERSION}_th.jpg`;
         let timeLeft=120;
         countdownEl.textContent=`Auto close in ${timeLeft}s`;
-        countdownTimer=setInterval(()=>{
+        const timer=setInterval(()=>{
           timeLeft--;
           countdownEl.textContent=`Auto close in ${timeLeft}s`;
-          if(timeLeft<=0){closePopup();}
+          if(timeLeft<=0){ closePopup(); clearInterval(timer); }
         },1000);
+        closeBtn.onclick=()=>{ closePopup(); clearInterval(timer); };
       }
       function closePopup(){
         overlay.style.display="none";
-        clearInterval(countdownTimer);
-        if(noShow.checked && !DEV_MODE){
-          localStorage.setItem("hideLetter_"+POPUP_VERSION,"1");
+        if(dontShowChk.checked){
+          localStorage.setItem("hideLetter_"+LETTER_VERSION,"1");
         }
       }
+      btnTH.onclick=()=>{ letterImg.src=`/assets/letter_${LETTER_VERSION}_th.jpg`; };
+      btnEN.onclick=()=>{ letterImg.src=`/assets/letter_${LETTER_VERSION}_en.jpg`; };
 
-      btnClose.addEventListener("click",closePopup);
-      btnTH.addEventListener("click",()=>{img.src=`/assets/letter_${POPUP_VERSION}_th.jpg`;btnTH.classList.add("active");btnEN.classList.remove("active");});
-      btnEN.addEventListener("click",()=>{img.src=`/assets/letter_${POPUP_VERSION}_en.jpg`;btnEN.classList.add("active");btnTH.classList.remove("active");});
-
-      if(DEV_MODE || !localStorage.getItem("hideLetter_"+POPUP_VERSION)){
-        showPopup();
-      }
+      const hidden=localStorage.getItem("hideLetter_"+LETTER_VERSION)==="1";
+      if(DEV_MODE || !hidden){ showPopup(); }
     });
   </script>
 </body>
