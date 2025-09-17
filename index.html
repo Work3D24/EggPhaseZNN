@@ -11,7 +11,6 @@
       --bg-bottom: #f48fb1;
       --card-shadow: 0 10px 30px rgba(0,0,0,0.45);
     }
-
     html,body {
       height:100%;
       margin:0;
@@ -20,7 +19,6 @@
       background:linear-gradient(to bottom,var(--bg-top) 0%, var(--bg-top) 70%, var(--bg-bottom) 100%);
       cursor: url("/assets/mouse.png"), auto;
     }
-
     .page {
       display:flex;
       flex-direction:column;
@@ -28,9 +26,7 @@
       justify-content:center;
       height:100%;
     }
-    .page.ar-active { background:transparent; }
-
-    /* กล่องโมเดล */
+    .page.ar-active{ background:transparent; }
     .viewer-card {
       width:100%;
       max-width:900px;
@@ -48,8 +44,12 @@
       shadow-softness:0.9;
       cursor: url("/assets/mouse.png"), auto !important;
     }
-
-    /* Liquid Glass Egg Day */
+    .egg-day-wrap {
+      margin-top: 3vh;
+      display:flex;
+      justify-content:center;
+      width:100%;
+    }
     .glass {
       position: relative;
       display: inline-flex;
@@ -57,25 +57,19 @@
       gap: .55em;
       padding: .5em 1.1em;
       border-radius: 16px;
-      background: linear-gradient(180deg,rgba(255,255,255,.22) 0%,rgba(255,255,255,.10) 60%,rgba(255,255,255,.06) 100%);
+      background: linear-gradient(180deg, rgba(255,255,255,.22) 0%, rgba(255,255,255,.10) 60%, rgba(255,255,255,.06) 100%);
       border: 1px solid rgba(255,255,255,.28);
       backdrop-filter: blur(14px) saturate(120%);
       -webkit-backdrop-filter: blur(14px) saturate(120%);
-      box-shadow:0 8px 24px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.28), inset 0 -1px 0 rgba(255,255,255,.08);
-      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(0,0,0,.35);
+      overflow:hidden;
     }
-    .glass .label { font-weight:700; font-size: clamp(14px, 2vw, 20px); color:#fff; }
-    .glass .evo { height: 1.2em; width:auto; object-fit: contain; }
-
-    .egg-day-wrap { margin-top:3vh; display:flex; justify-content:center; width:100%; }
-
-    /* โลโก้ */
     .logo-left, .logo-right { position:fixed; bottom:1vh; }
-    .logo-left { left:1vw; }
-    .logo-right { right:1vw; }
-    .logo-left img, .logo-right img { height:3vh; width:auto; object-fit:contain; }
-
-    /* Cursor ปลอมมือถือ */
+    .logo-left{ left:1vw; }
+    .logo-right{ right:1vw; }
+    .logo-left img, .logo-right img{
+      height:3vh; width:auto; object-fit:contain;
+    }
     .touch-cursor {
       position: fixed;
       width: 40px;
@@ -87,63 +81,73 @@
       display: none;
     }
 
-    /* === Popup Overlay === */
+    /* Popup */
     .popup-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.65);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 2000;
-    }
-    .popup-box {
-      background: rgba(255,255,255,0.85);
-      backdrop-filter: blur(20px);
-      border-radius: 18px;
-      padding: 16px;
-      max-width: 90%;
-      max-height: 90%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      box-shadow: 0 8px 24px rgba(0,0,0,.35);
-    }
-    .popup-header {
-      width:100%;
+      display:none;
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,0.65);
+      z-index:2000;
       display:flex;
-      justify-content: space-between;
+      justify-content:center;
       align-items:center;
-      margin-bottom:8px;
     }
-    .popup-header button {
-      padding: 6px 14px;
-      margin: 0 4px;
-      border:none;
-      border-radius:8px;
-      background: #f48fb1;
-      color:#fff;
-      font-weight:600;
-      cursor:pointer;
+    .popup-content {
+      background:rgba(255,255,255,0.2);
+      backdrop-filter: blur(18px) saturate(140%);
+      border-radius:20px;
+      padding:20px;
+      text-align:center;
+      position:relative;
+      width:90%;
+      max-width:600px;
+      box-shadow:0 10px 30px rgba(0,0,0,0.5);
     }
-    .popup-header button:hover { background:#ff6699; }
-    #popupClose { background:#444; }
-    #popupClose:hover { background:#000; }
-
-    #popupImg {
+    .popup-content img {
       max-height:60vh;
-      max-width:100%;
-      object-fit:contain;
+      width:auto;
       border-radius:12px;
+    }
+    .close-btn {
+      position:absolute;
+      top:10px;
+      right:15px;
+      font-size:20px;
+      cursor:pointer;
+      color:#fff;
+      background:rgba(0,0,0,0.5);
+      border-radius:50%;
+      padding:5px 10px;
+    }
+    .lang-buttons {
       margin-bottom:10px;
     }
-    #countdown { font-size:14px; color:#333; margin-bottom:6px; }
-    #doNotShowLabel { font-size:14px; color:#222; }
+    .lang-buttons button {
+      margin:0 5px;
+      padding:6px 12px;
+      border:none;
+      border-radius:8px;
+      font-weight:bold;
+      cursor:pointer;
+      background:rgba(255,255,255,0.8);
+    }
+    .lang-buttons button.active {
+      background:#f48fb1;
+      color:#fff;
+    }
+    .do-not-show {
+      margin-top:10px;
+      font-size:14px;
+    }
+    .countdown {
+      margin-top:8px;
+      font-size:13px;
+      color:#fff;
+    }
   </style>
 </head>
 <body>
   <div class="page" id="page-root">
-    <!-- กล่องโมเดล -->
     <div class="viewer-card">
       <model-viewer id="mv"
         src="/assets/model.glb"
@@ -159,36 +163,34 @@
         shadow-softness="0.9"
       ></model-viewer>
     </div>
-
-    <!-- Egg Day -->
     <div class="egg-day-wrap">
       <div class="glass">
         <img class="evo" src="/assets/imageevo01.png" alt="Evolution">
         <span class="label">EGG DAY : 02</span>
       </div>
     </div>
-
-    <!-- โลโก้ -->
-    <div class="logo-left"><img src="/assets/logoimage1.png" alt="Logo Left"></div>
-    <div class="logo-right"><img src="/assets/logoimage2.png" alt="Logo Right"></div>
-
-    <!-- Cursor ปลอมมือถือ -->
+    <div class="logo-left">
+      <img src="/assets/logoimage1.png" alt="Logo Left">
+    </div>
+    <div class="logo-right">
+      <img src="/assets/logoimage2.png" alt="Logo Right">
+    </div>
     <div class="touch-cursor" id="touchCursor"></div>
   </div>
 
   <!-- Popup -->
   <div class="popup-overlay" id="popupOverlay">
-    <div class="popup-box">
-      <div class="popup-header">
-        <div>
-          <button id="btn-th">TH</button>
-          <button id="btn-en">EN</button>
-        </div>
-        <button id="popupClose">✕</button>
+    <div class="popup-content">
+      <span class="close-btn" id="popupClose">&times;</span>
+      <div class="lang-buttons">
+        <button id="btnTH" class="active">TH</button>
+        <button id="btnEN">EN</button>
       </div>
-      <img id="popupImg" src="/assets/letter_v1_th.jpg" alt="Letter">
-      <div id="countdown">Auto close in 120s</div>
-      <label id="doNotShowLabel"><input type="checkbox" id="doNotShow"> Do not show again</label>
+      <img id="letterImage" src="/assets/letter_v1_th.jpg" alt="Letter">
+      <div class="do-not-show">
+        <input type="checkbox" id="doNotShowChk"> Do not show again
+      </div>
+      <div class="countdown" id="countdown">Auto close in 120s</div>
     </div>
   </div>
 
@@ -199,58 +201,8 @@
     document.addEventListener('DOMContentLoaded', () => {
       const mv = document.getElementById('mv');
       const page = document.getElementById('page-root');
-      const overlay = document.getElementById("popupOverlay");
-      const popupImg = document.getElementById("popupImg");
-      const closeBtn = document.getElementById("popupClose");
-      const doNotShow = document.getElementById("doNotShow");
-      const countdownEl = document.getElementById("countdown");
-      const btnTH = document.getElementById("btn-th");
-      const btnEN = document.getElementById("btn-en");
 
-      /* ========== POPUP CONFIG ========== */
-      const DEV_MODE = true; // <<== แก้ตรงนี้ ถ้า dev ให้ true, ถ้า production ให้ false
-      const VERSION = "v1"; // <<== แก้เลขเวอร์ชันตรงนี้เวลามี letter ใหม่
-      let lang = "th";
-      let countdown = 120;
-      let timer;
-
-      const key = "popupDismissed_" + VERSION;
-
-      function showPopup(){
-        overlay.style.display = "flex";
-        startCountdown();
-      }
-      function hidePopup(){
-        overlay.style.display = "none";
-        stopCountdown();
-      }
-      function startCountdown(){
-        countdown = 120;
-        countdownEl.textContent = "Auto close in " + countdown + "s";
-        timer = setInterval(()=>{
-          countdown--;
-          countdownEl.textContent = "Auto close in " + countdown + "s";
-          if(countdown<=0){ hidePopup(); }
-        },1000);
-      }
-      function stopCountdown(){ clearInterval(timer); }
-
-      closeBtn.addEventListener("click", hidePopup);
-      doNotShow.addEventListener("change", ()=>{
-        if(doNotShow.checked){ localStorage.setItem(key,"1"); }
-        else { localStorage.removeItem(key); }
-      });
-      btnTH.addEventListener("click", ()=>{
-        lang="th"; popupImg.src=`/assets/letter_${VERSION}_th.jpg`;
-      });
-      btnEN.addEventListener("click", ()=>{
-        lang="en"; popupImg.src=`/assets/letter_${VERSION}_en.jpg`;
-      });
-
-      if(DEV_MODE){ showPopup(); }
-      else if(!localStorage.getItem(key)){ showPopup(); }
-
-      /* ========== MODEL VIEWER CONFIG ========== */
+      // ========== โมเดล ==========
       mv.addEventListener('ar-status', (evt) => {
         const status = evt.detail?.status || '';
         if(status.includes('session-started') || status.includes('presenting') || status.includes('in-ar')){
@@ -284,7 +236,7 @@
       }
       mv.addEventListener('load', ()=>{ tryPlayAllAnimations(); });
 
-      /* Cursor ปลอมมือถือ */
+      // Cursor มือถือ
       const cursorEl = document.getElementById("touchCursor");
       document.addEventListener("touchstart", (e) => {
         const touch = e.touches[0];
@@ -297,22 +249,65 @@
         cursorEl.style.left = touch.clientX + "px";
         cursorEl.style.top = touch.clientY + "px";
       });
-      document.addEventListener("touchend", () => {
-        cursorEl.style.display = "none";
-      });
-      /* รองรับเมาส์ด้วย */
-      document.addEventListener("mousedown", (e)=>{
-        cursorEl.style.left = e.clientX + "px";
-        cursorEl.style.top = e.clientY + "px";
-        cursorEl.style.display = "block";
-      });
-      document.addEventListener("mousemove", (e)=>{
-        if(cursorEl.style.display==="block"){
-          cursorEl.style.left = e.clientX + "px";
-          cursorEl.style.top = e.clientY + "px";
+      document.addEventListener("touchend", () => { cursorEl.style.display = "none"; });
+
+      // ========== Popup ==========
+      const DEV_MODE = true; // <-- ปิด/เปิดระบบ "Do not show again" ตรงนี้
+
+      const POPUP_VERSION = "v1"; // <-- แก้เลขเวอร์ชันที่นี่เวลาอัพเดทจดหมาย
+      const popupOverlay = document.getElementById("popupOverlay");
+      const popupClose = document.getElementById("popupClose");
+      const letterImage = document.getElementById("letterImage");
+      const btnTH = document.getElementById("btnTH");
+      const btnEN = document.getElementById("btnEN");
+      const doNotShowChk = document.getElementById("doNotShowChk");
+      const countdownEl = document.getElementById("countdown");
+      let countdownTimer;
+
+      const storedVersion = localStorage.getItem("popupVersion");
+      const doNotShow = localStorage.getItem("doNotShow_"+POPUP_VERSION);
+
+      if(DEV_MODE || !storedVersion || storedVersion !== POPUP_VERSION || !doNotShow){
+        showPopup();
+        localStorage.setItem("popupVersion", POPUP_VERSION);
+      }
+
+      function showPopup(){
+        popupOverlay.style.display = "flex";
+        let timeLeft = 120;
+        countdownEl.textContent = "Auto close in " + timeLeft + "s";
+        countdownTimer = setInterval(()=>{
+          timeLeft--;
+          countdownEl.textContent = "Auto close in " + timeLeft + "s";
+          if(timeLeft <= 0){
+            closePopup();
+          }
+        },1000);
+      }
+
+      function closePopup(){
+        popupOverlay.style.display = "none";
+        clearInterval(countdownTimer);
+        if(doNotShowChk.checked && !DEV_MODE){
+          localStorage.setItem("doNotShow_"+POPUP_VERSION,"true");
         }
+      }
+
+      popupClose.addEventListener("click", closePopup);
+      popupOverlay.addEventListener("click", (e)=>{
+        if(e.target === popupOverlay) closePopup();
       });
-      document.addEventListener("mouseup", ()=>{ cursorEl.style.display="none"; });
+
+      btnTH.addEventListener("click", ()=>{
+        btnTH.classList.add("active");
+        btnEN.classList.remove("active");
+        letterImage.src="/assets/letter_"+POPUP_VERSION+"_th.jpg";
+      });
+      btnEN.addEventListener("click", ()=>{
+        btnEN.classList.add("active");
+        btnTH.classList.remove("active");
+        letterImage.src="/assets/letter_"+POPUP_VERSION+"_en.jpg";
+      });
     });
   </script>
 </body>
