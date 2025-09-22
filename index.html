@@ -8,7 +8,7 @@
   <!-- Metadata สำหรับ Social Share -->
   <meta property="og:title" content="Special of ZNN" />
   <meta property="og:description" content="Hi Granny, sis and bro, please bring me up and play with me!" />
-  <meta property="og:url" content="https://egg-phase-znn.vercel.app/" />
+  <meta property="og:url" content="https://specialofznn.vercel.app/" />
   <meta property="og:type" content="website" />
   <!-- ไม่ใส่ og:image → จะไม่มีรูปตอนแชร์ -->
 
@@ -146,8 +146,8 @@
     <!-- กล่องโมเดล -->
     <div class="viewer-card">
       <model-viewer id="mv"
-        src="/assets/model4.glb"
-        ios-src="/assets/model4.usdz"
+        src="/assets/model3.glb"
+        ios-src="/assets/model3.usdz"
         alt="Special of ZNN"
         ar ar-modes="webxr scene-viewer quick-look"
         environment-image="neutral"
@@ -161,8 +161,8 @@
     <!-- Egg Day -->
     <div class="egg-day-wrap">
       <div class="glass">
-        <img class="evo" src="/assets/imageevo02.png" alt="Evolution">
-        <span class="label">BABY DAY : 01</span>
+        <img class="evo" src="/assets/imageevo03.png" alt="Evolution">
+        <span class="label"> NONGZON </span>
       </div>
     </div>
 
@@ -179,7 +179,7 @@
         <button id="btnEN">EN</button>
       </div>
       <button class="popup-close" id="popupClose">×</button>
-      <img id="letterImage" src="/assets/letter_v1_th.jpg" alt="Letter">
+      <img id="letterImage" src="/assets/letter_v2_th.jpg" alt="Letter">
       <div class="popup-footer">
         <div id="countdown">Auto close in 120s</div>
         <label><input type="checkbox" id="dontShow"> Do not show again</label>
@@ -201,7 +201,7 @@
 
     const skipKey = "skipPopup";
     let currentLang = "th";
-    let version = "v1"; // v2, v3, v4
+    let version = "v2"; // v2, v3, v4
 
     // โหลดสถานะ "do not show again"
     if (localStorage.getItem(skipKey) === "true") {
@@ -252,4 +252,3 @@
   </script>
 </body>
 </html>
-
